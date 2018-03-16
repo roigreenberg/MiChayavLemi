@@ -28,14 +28,12 @@ public class ItemListActivity extends AppCompatActivity implements ProductAdapte
         mProducts = Product.generateDummyProductList();
         mFirebaseDatabaseItem.push().setValue(mProducts.get(0));
 
+        initRecycleView();
+
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
                 .child("events")
                 .child("items");
-
-
-        initRecycleView();
-
 
     }
 
@@ -56,4 +54,11 @@ public class ItemListActivity extends AppCompatActivity implements ProductAdapte
     public void onListItemClick(int clickItemIndex) {
 
     }
+
+//    FirebaseRecyclerAdapter adapter = new FirebaseRecyclerAdapter() {
+//        @Override
+//        protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, Object model, int position) {
+//
+//        }
+//    }
 }
