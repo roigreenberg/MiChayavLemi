@@ -62,13 +62,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/imageViewChoose"
-            android:layout_width="44.97dp"
-            android:layout_height="44.97dp"
-            android:layout_marginTop="10.13dp"
-            app:civ_border_width="3dp" />
 
     </android.support.v7.widget.CardView>
 

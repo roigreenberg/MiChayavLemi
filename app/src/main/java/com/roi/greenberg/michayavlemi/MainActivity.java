@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -60,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
                 final EditText mName =  mView.findViewById(R.id.etEventName);
                 final EditText mDate = mView.findViewById(R.id.etDate);
                 final EditText mLocation = mView.findViewById(R.id.etLocation);
-
                 Button mButtonOk = mView.findViewById(R.id.btnOk);
                 Button mButtonCancel = mView.findViewById(R.id.btnCancel);
 
@@ -71,12 +69,16 @@ public class MainActivity extends AppCompatActivity {
                 mButtonOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        /*
                         if (!mName.getText().toString().isEmpty() && !mDate.getText().toString().isEmpty()) {
                             Toast.makeText(MainActivity.this,"", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
                         } else {
                             Toast.makeText(MainActivity.this,"You'r event is create", Toast.LENGTH_SHORT).show();
                         }
+                        */
+
+
                     }
                 });
                 mButtonCancel.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    
 
 
     @Override
