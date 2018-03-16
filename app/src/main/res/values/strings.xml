@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">MiChayavLemi</string>
     <string name="title_activity_list_events">ListEvents</string>
-    <string name="facebook_application_id">438015026630700</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="action_settings">Settings</string>
 </resources>
