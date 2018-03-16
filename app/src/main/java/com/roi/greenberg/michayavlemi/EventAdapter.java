@@ -2,8 +2,10 @@ package com.roi.greenberg.michayavlemi;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,8 @@ public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.E
     @Override
     protected void onBindViewHolder(@NonNull EventHolder viewHolder, int position, @NonNull EventDetails event) {
         viewHolder.bindItem(event, isSelected(position));
+
+        viewHolder.itemView.setTag(position);
     }
 
     @Override
@@ -30,26 +34,36 @@ public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.E
         return new EventHolder(view);
     }
 
-    public static class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView mTextViewEventName;
         TextView mTextViewEventDate;
+        TextView mTextViewEventLocation;
+        String key;
 
-        public EventHolder(View itemView) {
+        EventHolder(View itemView) {
             super(itemView);
-
-            mTextViewEventName = itemView.findViewById(R.id.textViewEventDay);
+            itemView.setOnClickListener(this);
+            mTextViewEventName = itemView.findViewById(R.id.textViewEventName);
             mTextViewEventDate = itemView.findViewById(R.id.textViewEventDate);
+            mTextViewEventLocation = itemView.findViewById(R.id.textViewEventLocation);
+
         }
 
         void bindItem(EventDetails eventDetails, boolean isSelected){
-            mTextViewEventName.setText(eventDetails.getNameEvent());
+            mTextViewEventName.setText(eventDetails.getName());
             mTextViewEventDate.setText(String.valueOf(eventDetails.getDate()));
+            mTextViewEventLocation.setText(eventDetails.getLocation());
         }
 
         @Override
         public void onClick(View v) {
-
+            Log.d("EVENT", "here");
+            int position = (int) v.getTag();
+            String key = getRef(position).getKey();
+            Intent toListOfItemsIntent = new Intent(v.getContext(),ItemListActivity.class);
+            toListOfItemsIntent.putExtra("EXTRA_REF", key);
+            v.getContext().startActivity(toListOfItemsIntent);
         }
     }
 }

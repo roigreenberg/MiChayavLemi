@@ -2,6 +2,7 @@ package com.roi.greenberg.michayavlemi;
 
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -18,8 +19,9 @@ abstract class SelectableAdapter<T, K extends RecyclerView.ViewHolder> extends F
 
 
 
-    public SelectableAdapter(FirebaseRecyclerOptions<T> options) {
+    SelectableAdapter(FirebaseRecyclerOptions<T> options) {
         super(options);
+        Log.d("SelectableAdapter", "here");
         selectedItems = new SparseBooleanArray();
     }
 
@@ -28,7 +30,7 @@ abstract class SelectableAdapter<T, K extends RecyclerView.ViewHolder> extends F
      * @param position Position of the item to check
      * @return true if the item is selected, false otherwise
      */
-    public boolean isSelected(int position) {
+    boolean isSelected(int position) {
         return getSelectedItems().contains(position);
     }
 
@@ -68,7 +70,7 @@ abstract class SelectableAdapter<T, K extends RecyclerView.ViewHolder> extends F
      * Indicates the list of selected items
      * @return SList of selected items ids
      */
-    public List<Integer> getSelectedItems() {
+    private List<Integer> getSelectedItems() {
         List<Integer> items = new ArrayList<>(selectedItems.size());
         for (int i = 0; i < selectedItems.size(); ++i) {
             items.add(selectedItems.keyAt(i));

@@ -7,62 +7,41 @@ import java.util.ArrayList;
  */
 
 public class Item {
-    private String mProductName;
-    private String mUser;
-    private String mProductPrice;
+    private String name;
+    private String buyer;
+    private Long cost;
 
     public Item() {
 
     }
 
-    public Item(String productName, String user, String productPrice) {
-        mProductName = productName;
-        mUser = user;
-        mProductPrice = productPrice;
+    public Item(String name, String user, Long cost) {
+        this.name = name;
+        this.buyer = user;
+        this.cost = cost;
     }
 
-    public String getProductName() {
-        return mProductName;
+    public String getName() {
+        return name;
     }
 
-    public void setProductName(String mProductName) {
-        this.mProductName = mProductName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getUser() {
-        return mUser;
+    public String getBuyer() {
+        return buyer;
     }
 
-    public void setUser(String mUser) {
-        this.mUser = mUser;
+    public void setBuyer(String buyer) {
+        this.buyer = buyer;
     }
 
-    public String getProductPrice() {
-        return mProductPrice;
+    public Long getCost() {
+        return cost;
     }
 
-    public void setProductPrice(String mProductPrice) {
-        this.mProductPrice = mProductPrice;
-    }
-
-    public static ArrayList<Item> generateDummyProductList() {
-        ArrayList<Item> items = new ArrayList<>();
-        items.add(new Item("Beer", "Moti", "50"));
-        items.add(new Item("Ice", "Amit", "20"));
-        items.add(new Item("Meet", "Roei", "250"));
-        items.add(new Item("Vegetables", "Inbal", "70"));
-        items.add(new Item("Soft drinks", "Ana", "120"));
-        items.add(new Item("Beer", "Moti", "50"));
-        items.add(new Item("Ice", "Amit", "20"));
-        items.add(new Item("Meet", "Roei", "250"));
-        items.add(new Item("Vegetables", "Inbal", "70"));
-        items.add(new Item("Soft drinks", "Ana", "120"));
-        items.add(new Item("Beer", "Moti", "50"));
-        items.add(new Item("Ice", "Amit", "20"));
-        items.add(new Item("Meet", "Roei", "250"));
-        items.add(new Item("Vegetables", "Inbal", "70"));
-        items.add(new Item("Soft drinks", "Ana", "120"));
-
-        return items;
+    public void setCost(Long cost) {
+        this.cost = cost;
     }
 }

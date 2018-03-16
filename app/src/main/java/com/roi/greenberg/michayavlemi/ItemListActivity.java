@@ -23,21 +23,30 @@ public class ItemListActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
-        mFirebaseDatabaseItem = FirebaseDatabase.getInstance().getReference().child("events").child("items");
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String value = extras.getString("EXTRA_REF");
+            if (value == null)
+                return;
 
-        mItems = new ArrayList<>();
-        mItems = Item.generateDummyProductList();
-        mFirebaseDatabaseItem.push().setValue(mItems.get(0));
+            mFirebaseDatabaseItem = FirebaseDatabase.getInstance().getReference().child("events").child(value).child("items");
+            //The key argument here must match that used in the other activity
+        } else {
+            return;
+        }
+
+//        mFirebaseDatabaseItem = FirebaseDatabase.getInstance().getReference().child("events").child("items");
 
 
 
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("events")
-                .child("eventid1")
-                .child("items");
 
-        initRecycleView(query);
+//        Query query = FirebaseDatabase.getInstance()
+//                .getReference()
+//                .child("events")
+//                .child(value)
+//                .child("items");
+
+        initRecycleView(mFirebaseDatabaseItem);
     }
 
     /**
@@ -53,6 +62,7 @@ public class ItemListActivity extends AppCompatActivity{
                 .setQuery(query, Item.class)
                 .build();
         mAdapter = new ItemAdapter(options);
+        mAdapter.startListening();
         mRecyclerView.setAdapter(mAdapter);
     }
 

@@ -62,9 +62,15 @@ public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickL
 
     @Override
     protected void onBindViewHolder(@NonNull ItemHolder holder, int position, @NonNull Item item) {
-        holder.productName.setText(item.getProductName());
-        holder.productUser.setText(item.getUser());
-        holder.productPrice.setText(item.getProductPrice());
+        holder.productName.setText(item.getName());
+        if (item.getBuyer() != null)
+            holder.productUser.setText(item.getBuyer());
+        else
+            holder.productUser.setText("--");
+        if (item.getCost() != null)
+            holder.productPrice.setText(item.getCost().toString());
+        else
+            holder.productPrice.setText("--");
     }
 
 

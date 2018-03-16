@@ -54,11 +54,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         Log.d(TAG, "before auth");
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -125,12 +125,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FirebaseRecyclerOptions<EventDetails> options = new FirebaseRecyclerOptions.Builder<EventDetails>()
-                .setQuery(eventQuery, EventDetails.class)
+                .setQuery(eventRef, EventDetails.class)
                 .build();
+
         mEventAdapter = new EventAdapter(this, options);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        mRecyclerView.setAdapter(mEventAdapter);
         mRecyclerView.setLayoutManager(layoutManager);
+        mEventAdapter.startListening();
+        mRecyclerView.setAdapter(mEventAdapter);
 
         //Button btnToListOfProducts = findViewById(R.id.btn_item_list_of_products);
         //btnToListOfProducts.setOnClickListener(new View.OnClickListener() {
@@ -277,6 +279,22 @@ public class MainActivity extends AppCompatActivity {
         //detachDatabaseReadListener();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        if(mEventAdapter != null) {
+            mEventAdapter.startListening();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(mEventAdapter != null) {
+            mEventAdapter.stopListening();
+        }
+    }
 
 
 

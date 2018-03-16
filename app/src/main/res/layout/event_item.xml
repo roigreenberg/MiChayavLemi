@@ -43,11 +43,13 @@
         android:layout_height="19dp"/>
 
         <TextView
+            android:id="@+id/textViewEventName"
             android:text="Event"
             android:textStyle="bold"
             android:layout_marginLeft="72.34dp"
             android:layout_marginTop="12.08dp"
             android:textColor="#555759"
+            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

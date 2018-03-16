@@ -3,41 +3,41 @@ package com.roi.greenberg.michayavlemi;
 
 public class EventDetails {
 
-    private String mNameEvent;
-    private Long mDate;
-    private String mLocation;
+    private String name;
+    private Long date;
+    private String location;
 
 
     public EventDetails() {}
 
-    public EventDetails(String nameEvent, Long date, String location) {
-        mNameEvent = nameEvent;
+    public EventDetails(String name, Long date, String location) {
+        this.name = name;
 
-        mDate = date;
-        mLocation = location;
+        this.date = date;
+        this.location = location;
     }
 
-    public String getNameEvent() {
-        return mNameEvent;
+    public String getName() {
+        return name;
     }
 
-    public void setNameEvent(String nameEvent) {
-        mNameEvent = nameEvent;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getDate() {
-        return mDate;
+        return date;
     }
 
     public void setDate(Long date) {
-        mDate = date;
+        this.date = date;
     }
 
     public String getLocation() {
-        return mLocation;
+        return location;
     }
 
     public void setLocation(String location) {
-        mLocation = location;
+        this.location = location;
     }
 }
