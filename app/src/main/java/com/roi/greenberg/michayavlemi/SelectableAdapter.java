@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.Query;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +18,8 @@ abstract class SelectableAdapter<T, K extends RecyclerView.ViewHolder> extends F
 
 
 
-    public SelectableAdapter(Class<T> modelClass, int modelLayout, Class<K> viewHolderClass, Query query) {
-        super(modelClass, modelLayout, viewHolderClass, query);
+    public SelectableAdapter(FirebaseRecyclerOptions<T> options) {
+        super(options);
         selectedItems = new SparseBooleanArray();
     }
 
