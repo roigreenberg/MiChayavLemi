@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         mUserUid = user.getUid();
         Log.d(TAG, mUsername + " " + email + " " + photoUrl + " " + mUserUid);
 
-        mDatabaseReference.child("users").child(mUserUid).setValue(new User(mUsername, email, photoUrl, mUserUid));
+        mDatabaseReference.child("users").child(mUserUid).child("details").setValue(new User(mUsername, email, photoUrl, mUserUid));
         FloatingActionButton fab = findViewById(R.id.fab);
 
         DatabaseReference eventRef = mDatabaseReference.child("users").child(mUserUid).child("events");
@@ -291,15 +291,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        int id = item.getItemId();
+        switch (item.getItemId()) {
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            case R.id.action_settings:
+//            startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            case R.id.sign_out_menu:
+                AuthUI.getInstance().signOut(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
-
     }
 
 //
