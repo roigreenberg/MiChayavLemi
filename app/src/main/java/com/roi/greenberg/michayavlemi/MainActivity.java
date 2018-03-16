@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String USERS = "Users";
 
     public static String mUsername;
-    public static String mUserID;
+    public static String mUserUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null){
-                    onSignedInInitialize();
+                    onSignedInInitialize(user);
                 } else {
                     onSignedOutCleanup();
                     startActivityForResult(
@@ -100,23 +100,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void onSignedInInitialize() {
+    private void onSignedInInitialize(FirebaseUser user) {
 //        showLoading();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-            Uri photoUrl = user.getPhotoUrl();
-            String uid = user.getUid();
-            Log.d(TAG, name + " " + email + " " + photoUrl + " " + uid);
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-        }
+        mUsername = user.getDisplayName();
+        String email = user.getEmail();
+        Uri photoUrl = user.getPhotoUrl();
+        mUserUid = user.getUid();
+        Log.d(TAG, mUsername + " " + email + " " + photoUrl + " " + mUserUid);
 
+        mDatabaseReference.child("users").child(mUserUid).setValue(new User(mUsername, email, photoUrl, mUserUid));
         FloatingActionButton fab = findViewById(R.id.fab);
 
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("users/userid1/events");
-        Query eventQuery = mDatabaseReference.orderByKey();
+        DatabaseReference eventRef = mDatabaseReference.child("users").child(mUserUid).child("events");
+        Query eventQuery = eventRef.orderByKey();
 
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
