@@ -2,22 +2,32 @@ package com.roi.greenberg.michayavlemi;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.firebase.database.Query;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 
 public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.EventHolder> {
 
 
-    EventAdapter(Context context, Query query) {
-        super(EventDetails.class, R.layout.event_item, EventAdapter.EventHolder.class, query);
+    EventAdapter(Context context, FirebaseRecyclerOptions<EventDetails> options) {
+        super(options);
     }
 
     @Override
-    protected void populateViewHolder(EventHolder viewHolder, EventDetails event, int position) {
+    protected void onBindViewHolder(@NonNull EventHolder viewHolder, int position, @NonNull EventDetails event) {
         viewHolder.bindItem(event, isSelected(position));
+    }
+
+    @Override
+    public EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view = inflater.inflate(R.layout.event_item, parent, false);
+        return new EventHolder(view);
     }
 
     public static class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
