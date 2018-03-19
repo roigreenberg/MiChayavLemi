@@ -1,6 +1,11 @@
 package com.roi.greenberg.michayavlemi;
 
 
+import com.google.firebase.database.Exclude;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class EventDetails {
 
     private String name;
@@ -39,5 +44,15 @@ public class EventDetails {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("name", name);
+        result.put("date", date);
+        result.put("location", location);
+
+        return result;
     }
 }

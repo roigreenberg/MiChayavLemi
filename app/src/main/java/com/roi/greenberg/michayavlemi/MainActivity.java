@@ -29,7 +29,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,8 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String USERS = "Users";
 
-    public static String mUsername;
-    public static String mUserUid;
+    public static User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,16 +106,16 @@ public class MainActivity extends AppCompatActivity {
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-        mUsername = user.getDisplayName();
+        String userName = user.getDisplayName();
         String email = user.getEmail();
         Uri photoUrl = user.getPhotoUrl();
-        mUserUid = user.getUid();
-        Log.d(TAG, mUsername + " " + email + " " + photoUrl + " " + mUserUid);
-
-        mDatabaseReference.child("users").child(mUserUid).child("details").setValue(new User(mUsername, email, photoUrl, mUserUid));
+        String userUid = user.getUid();
+        Log.d(TAG, userName + " " + email + " " + photoUrl + " " + userUid);
+        final User mUser = new User(userName, email, photoUrl, userUid);
+        mDatabaseReference.child("users").child(userUid).child("details").setValue(mUser);
         FloatingActionButton fab = findViewById(R.id.fab);
 
-        DatabaseReference eventRef = mDatabaseReference.child("users").child(mUserUid).child("events");
+        DatabaseReference eventRef = mDatabaseReference.child("users").child(mUser.getUid()).child("events");
         Query eventQuery = eventRef.orderByKey();
 
 
@@ -161,14 +162,25 @@ public class MainActivity extends AppCompatActivity {
                 mButtonOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        /*
-                        if (!mName.getText().toString().isEmpty() && !mDate.getText().toString().isEmpty()) {
-                            Toast.makeText(MainActivity.this,"", Toast.LENGTH_SHORT).show();
+                        String name = mName.getText().toString();
+                        Long date = Long.parseLong(mDate.getText().toString());
+                        String location = mLocation.getText().toString();
+                        if (!name.isEmpty()) {
+                            Toast.makeText(MainActivity.this,"Add event: " + name, Toast.LENGTH_SHORT).show();
+                            String key = mDatabaseReference.child("events").push().getKey();
+                            EventDetails eventDetails = new EventDetails(name, date, location);
+                            Map<String, Object> eventDetailsValues = eventDetails.toMap();
+
+                            Map<String, Object> childUpdates = new HashMap<>();
+
+                            childUpdates.put("/events/" + key + "/details", eventDetailsValues);
+                            childUpdates.put("/events/" + key + "/users/" + mUser.getUid(), mUser);
+                            mDatabaseReference.updateChildren(childUpdates);
                             dialog.dismiss();
                         } else {
-                            Toast.makeText(MainActivity.this,"You'r event is create", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this,"Please enter event name", Toast.LENGTH_SHORT).show();
                         }
-                        */
+
 
 
                     }
@@ -176,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 mButtonCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        dialog.dismiss();
                     }
                 });
             }
@@ -185,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onSignedOutCleanup() {
-        mUsername = ANONYMOUS;
+        mUser.setUsername(ANONYMOUS);
 //        if (mOwnListAdapter != null)
 //            mOwnListAdapter.cleanup();
         //detachDatabaseReadListener();
@@ -278,26 +290,6 @@ public class MainActivity extends AppCompatActivity {
         //mOwnListAdapter.cleanup();
         //detachDatabaseReadListener();
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-        if(mEventAdapter != null) {
-            mEventAdapter.startListening();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if(mEventAdapter != null) {
-            mEventAdapter.stopListening();
-        }
-    }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
