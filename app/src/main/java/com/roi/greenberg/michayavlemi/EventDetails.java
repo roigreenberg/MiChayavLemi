@@ -9,13 +9,13 @@ import java.util.Map;
 public class EventDetails {
 
     private String name;
-    private Long date;
+    private HashMap<String, Object> date;
     private String location;
 
 
     public EventDetails() {}
 
-    public EventDetails(String name, Long date, String location) {
+    public EventDetails(String name, HashMap<String, Object> date, String location) {
         this.name = name;
 
         this.date = date;
@@ -30,12 +30,18 @@ public class EventDetails {
         this.name = name;
     }
 
-    public Long getDate() {
+    public HashMap<String, Object> getDate() {
         return date;
     }
 
-    public void setDate(Long date) {
+    public void setDate(HashMap<String, Object> date) {
         this.date = date;
+    }
+
+    @Exclude
+    public long getTimeLong() {
+
+        return (long) this.date.get("date");
     }
 
     public String getLocation() {

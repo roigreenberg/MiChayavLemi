@@ -1,6 +1,6 @@
 package com.roi.greenberg.michayavlemi;
 
-import android.app.AlertDialog;
+import android.support.v4.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,8 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -27,13 +25,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.roi.greenberg.michayavlemi.fragments.AddNewEventFragment;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private static final int RC_SIGN_IN = 1;
     private static final String ANONYMOUS = "anonymous";
@@ -111,16 +108,16 @@ public class MainActivity extends AppCompatActivity {
         Uri photoUrl = user.getPhotoUrl();
         String userUid = user.getUid();
         Log.d(TAG, userName + " " + email + " " + photoUrl + " " + userUid);
-        final User mUser = new User(userName, email, photoUrl, userUid);
+        mUser = new User(userName, email, photoUrl, userUid);
         mDatabaseReference.child("users").child(userUid).child("details").setValue(mUser);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab_new_event);
 
         DatabaseReference eventRef = mDatabaseReference.child("users").child(mUser.getUid()).child("events");
         Query eventQuery = eventRef.orderByKey();
 
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        mRecyclerView = findViewById(R.id.recyclerView);
+        mRecyclerView = findViewById(R.id.rv_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -139,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         //btnToListOfProducts.setOnClickListener(new View.OnClickListener() {
         //    @Override
         //    public void onClick(View view) {
-        //        Intent toListOfItemsIntent = new Intent(MainActivity.this,ItemListActivity.class);
+        //        Intent toListOfItemsIntent = new Intent(MainActivity.this,EventActivity.class);
         //        startActivity(toListOfItemsIntent);
         //    }
         //});
@@ -147,57 +144,76 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-                View mView = getLayoutInflater().inflate(R.layout.dialog_event, null);
-                final EditText mName =  mView.findViewById(R.id.etEventName);
-                final EditText mDate = mView.findViewById(R.id.etDate);
-                final EditText mLocation = mView.findViewById(R.id.etLocation);
-                Button mButtonOk = mView.findViewById(R.id.btnOk);
-                Button mButtonCancel = mView.findViewById(R.id.btnCancel);
 
+                android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+                DialogFragment DateFragment = new AddNewEventFragment();
+                DateFragment.show(fragmentManager, "addNewEvent");
 
-                mBuilder.setView(mView);
-                final AlertDialog dialog = mBuilder.create();
-                dialog.show();
-                mButtonOk.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String name = mName.getText().toString();
-                        Long date = Long.parseLong(mDate.getText().toString());
-                        String location = mLocation.getText().toString();
-                        if (!name.isEmpty()) {
-                            Toast.makeText(MainActivity.this,"Add event: " + name, Toast.LENGTH_SHORT).show();
-                            String key = mDatabaseReference.child("events").push().getKey();
-                            EventDetails eventDetails = new EventDetails(name, date, location);
-                            Map<String, Object> eventDetailsValues = eventDetails.toMap();
-
-                            Map<String, Object> childUpdates = new HashMap<>();
-
-                            childUpdates.put("/events/" + key + "/details", eventDetailsValues);
-                            childUpdates.put("/events/" + key + "/users/" + mUser.getUid(), mUser);
-                            mDatabaseReference.updateChildren(childUpdates);
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(MainActivity.this,"Please enter event name", Toast.LENGTH_SHORT).show();
-                        }
-
-
-
-                    }
-                });
-                mButtonCancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
+//                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+//                View mView = getLayoutInflater().inflate(R.layout.dialog_add_new_event, null);
+//                final EditText mName =  mView.findViewById(R.id.etEventName);
+//                final EditText mDate = mView.findViewById(R.id.etDate);
+//                final EditText mLocation = mView.findViewById(R.id.etLocation);
+//                Button mButtonOk = mView.findViewById(R.id.btnOk);
+//                Button mButtonCancel = mView.findViewById(R.id.btnCancel);
+//
+//                mDate.setOnClickListener( new View.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(View v) {
+//                        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+//                        DialogFragment DateFragment = new DatePickerFragment();
+//                        DateFragment.show(getFragmentManager(), "datePicker");
+//                    }
+//
+//                });
+//
+//
+//                mBuilder.setView(mView);
+//                final AlertDialog dialog = mBuilder.create();
+//                dialog.show();
+//                mButtonOk.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        String name = mName.getText().toString();
+//                        HashMap<String, Object> date = new HashMap<>();
+//                        date.put("Date", mDate);
+//                        String location = mLocation.getText().toString();
+//                        if (!name.isEmpty()) {
+//                            Toast.makeText(MainActivity.this,"Add event: " + name, Toast.LENGTH_SHORT).show();
+//                            String key = mDatabaseReference.child("events").push().getKey();
+//                            EventDetails eventDetails = new EventDetails(name, date, location);
+//                            Map<String, Object> eventDetailsValues = eventDetails.toMap();
+//
+//                            Map<String, Object> childUpdates = new HashMap<>();
+//
+//                            childUpdates.put("/events/" + key + "/details", eventDetailsValues);
+//                            childUpdates.put("/events/" + key + "/users/" + mUser.getUid(), mUser);
+//                            mDatabaseReference.updateChildren(childUpdates);
+//                            dialog.dismiss();
+//                        } else {
+//                            Toast.makeText(MainActivity.this,"Please enter event name", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//
+//
+//                    }
+//                });
+//                mButtonCancel.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                    }
+//                });
             }
         });
 
     }
 
     private void onSignedOutCleanup() {
-        mUser.setUsername(ANONYMOUS);
+        if (mUser != null) {
+            mUser.setUsername(ANONYMOUS);
+        }
 //        if (mOwnListAdapter != null)
 //            mOwnListAdapter.cleanup();
         //detachDatabaseReadListener();
@@ -298,6 +314,13 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+    * Callback invoked when a menu item was selected from this Activity's menu.
+    *
+    * @param item The menu item that was selected by the user
+    *
+    * @return true if you handle the menu click here, false otherwise
+    */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -313,33 +336,4 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-//
-//    /**
-//     * Callback invoked when a menu item was selected from this Activity's menu.
-//     *
-//     * @param item The menu item that was selected by the user
-//     *
-//     * @return true if you handle the menu click here, false otherwise
-//     */
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//
-//
-//
-//        switch (item.getItemId()) {
-//            case R.id.add_new_list_menu_menu:
-//                showAddingDialog();
-//                return true;
-//            case R.id.action_settings:
-//                startActivity(new Intent(this, SettingsActivity.class));
-//                return true;
-//            case R.id.sign_out_menu:
-//                AuthUI.getInstance().signOut(this);
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
-
 }

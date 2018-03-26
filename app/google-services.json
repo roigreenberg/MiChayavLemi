@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "729794992993-qo3vkcch3qsee10n6edvgnhljh5f73fd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.roi.greenberg.michayavlemi",
+            "certificate_hash": "d4aea5a96cf22bf7ee9539989e3dcf6c6ba69607"
+          }
+        },
+        {
           "client_id": "729794992993-3vbo57cg7so0ho6mhppgfodlouu364cf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

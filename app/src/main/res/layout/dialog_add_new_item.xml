@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="5dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:text="@string/new_item_title"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/et_new_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="6"
+        android:hint="@string/hint_item_name"
+        android:inputType="text" />
+
+    <Spinner
+        android:id="@+id/sp_new_item_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="6"
+        android:hint="@string/hint_user_name"
+        android:textColor="@android:color/black"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/et_new_item_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="6"
+        android:hint="@string/hint_price"
+        android:inputType="number" />
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content">-->
+
+    <!--<Button-->
+        <!--android:id="@+id/btnOk"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="200dp"-->
+        <!--android:background="#a8d69e"-->
+        <!--android:text="OK"/>-->
+
+
+    <!--<Button-->
+        <!--android:id="@+id/btnCancel"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="80dp"-->
+        <!--android:background="#aba2a2"-->
+        <!--android:text="CANCEL"/>-->
+
+    <!--</RelativeLayout>-->
+</LinearLayout>

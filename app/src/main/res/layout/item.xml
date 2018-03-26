@@ -5,13 +5,13 @@
     android:layout_height="56dp">
 
     <TextView
-        android:id="@+id/tv_product"
+        android:id="@+id/tv_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Beer"
+        android:text="NAME"
         android:textColor="#000000"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -19,26 +19,26 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_user_buy"
+        android:id="@+id/tv_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:text="Moti"
+        android:text="User"
         android:textColor="#000000"
         android:textSize="20sp"
-        app:layout_constraintLeft_toRightOf="@id/tv_product"
-        app:layout_constraintTop_toTopOf="@id/tv_product" />
+        app:layout_constraintStart_toEndOf="@id/tv_item_name"
+        app:layout_constraintEnd_toStartOf="@id/tv_price"
+        app:layout_constraintTop_toTopOf="@id/tv_item_name" />
 
     <TextView
-        android:id="@+id/tv_pric"
+        android:id="@+id/tv_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginEnd="8dp"
         android:text="50"
         android:textColor="#000000"
         android:textSize="20sp"
-        app:layout_constraintLeft_toRightOf="@id/tv_user_buy"
-        app:layout_constraintTop_toTopOf="@id/tv_product" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_item_name" />
 
     <View
         android:layout_width="match_parent"

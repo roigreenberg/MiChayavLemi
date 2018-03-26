@@ -39,9 +39,9 @@ public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickL
 
     public ItemHolder(View itemView) {
         super(itemView);
-        productName = itemView.findViewById(R.id.tv_product);
-        productUser = itemView.findViewById(R.id.tv_user_buy);
-        productPrice = itemView.findViewById(R.id.tv_pric);
+        productName = itemView.findViewById(R.id.tv_item_name);
+        productUser = itemView.findViewById(R.id.tv_user);
+        productPrice = itemView.findViewById(R.id.tv_price);
     }
 
     @Override
@@ -63,12 +63,12 @@ public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickL
     @Override
     protected void onBindViewHolder(@NonNull ItemHolder holder, int position, @NonNull Item item) {
         holder.productName.setText(item.getName());
-        if (item.getBuyer() != null)
-            holder.productUser.setText(item.getBuyer());
+        if (item.getUser() != null && item.getBuyerName() != null && !item.getBuyerName().isEmpty())
+            holder.productUser.setText(item.getBuyerName());
         else
             holder.productUser.setText("--");
-        if (item.getCost() != null)
-            holder.productPrice.setText(item.getCost().toString());
+        if (item.getPrice() != 0)
+            holder.productPrice.setText(String.valueOf(item.getPrice()));
         else
             holder.productPrice.setText("--");
     }

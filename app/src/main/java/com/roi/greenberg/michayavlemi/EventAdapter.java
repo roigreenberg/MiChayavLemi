@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+
+import java.util.Date;
 
 public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.EventHolder> {
 
@@ -30,13 +33,14 @@ public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.E
     @Override
     public EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.event_item, parent, false);
+        View view = inflater.inflate(R.layout.event, parent, false);
         return new EventHolder(view);
     }
 
     public class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView mTextViewEventName;
+        TextView mTextViewEventDay;
         TextView mTextViewEventDate;
         TextView mTextViewEventLocation;
         String key;
@@ -45,6 +49,7 @@ public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.E
             super(itemView);
             itemView.setOnClickListener(this);
             mTextViewEventName = itemView.findViewById(R.id.textViewEventName);
+            mTextViewEventDay = itemView.findViewById(R.id.textViewEventDay);
             mTextViewEventDate = itemView.findViewById(R.id.textViewEventDate);
             mTextViewEventLocation = itemView.findViewById(R.id.textViewEventLocation);
 
@@ -52,18 +57,19 @@ public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.E
 
         void bindItem(EventDetails eventDetails, boolean isSelected){
             mTextViewEventName.setText(eventDetails.getName());
-            mTextViewEventDate.setText(String.valueOf(eventDetails.getDate()));
+            mTextViewEventDay.setText(DateFormat.format("E", new Date(eventDetails.getTimeLong())));
+            mTextViewEventDate.setText(DateFormat.format("MM/dd", new Date(eventDetails.getTimeLong())));
             mTextViewEventLocation.setText(eventDetails.getLocation());
         }
 
         @Override
         public void onClick(View v) {
-            Log.d("EVENT", "here");
+            Log.d("EVENT", v.getTag().toString());
             int position = (int) v.getTag();
             String key = getRef(position).getKey();
-            Intent toListOfItemsIntent = new Intent(v.getContext(),ItemListActivity.class);
-            toListOfItemsIntent.putExtra("EXTRA_REF", key);
-            v.getContext().startActivity(toListOfItemsIntent);
+            Intent eventIntent = new Intent(v.getContext(),EventActivity.class);
+            eventIntent.putExtra("EXTRA_REF", key);
+            v.getContext().startActivity(eventIntent);
         }
     }
 }

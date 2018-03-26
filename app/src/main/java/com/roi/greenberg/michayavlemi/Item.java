@@ -1,6 +1,9 @@
 package com.roi.greenberg.michayavlemi;
 
-import java.util.ArrayList;
+import com.google.firebase.database.Exclude;
+import com.roi.greenberg.michayavlemi.utils.Constants;
+
+import java.util.HashMap;
 
 /**
  * Created by moti5321 on 15/03/2018.
@@ -8,17 +11,17 @@ import java.util.ArrayList;
 
 public class Item {
     private String name;
-    private String buyer;
-    private Long cost;
+    private User user;
+    private float price;
 
     public Item() {
 
     }
 
-    public Item(String name, String user, Long cost) {
+    public Item(String name, User user, float price) {
         this.name = name;
-        this.buyer = user;
-        this.cost = cost;
+        this.user = user;
+        this.price = price;
     }
 
     public String getName() {
@@ -29,19 +32,24 @@ public class Item {
         this.name = name;
     }
 
-    public String getBuyer() {
-        return buyer;
+    public User getUser() {
+        return user;
     }
 
-    public void setBuyer(String buyer) {
-        this.buyer = buyer;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Long getCost() {
-        return cost;
+    public float getPrice() {
+        return price;
     }
 
-    public void setCost(Long cost) {
-        this.cost = cost;
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    @Exclude
+    public String getBuyerName() {
+        return user.toString();
     }
 }

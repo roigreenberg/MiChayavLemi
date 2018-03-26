@@ -12,15 +12,15 @@ public class User {
     private String photoUrl;
     private String uid;
 
-    private EventDetails events;
-
     public User() {
     }
 
-    User(String mUsername, String mUserEmail, Uri photoUrl, String uid) {
+    public User(String mUsername, String mUserEmail, Uri photoUrl, String uid) {
         this.username = mUsername;
         this.userEmail = mUserEmail;
-        this.photoUrl = photoUrl.toString();
+        if (photoUrl != null) {
+            this.photoUrl = photoUrl.toString();
+        }
         this.uid = uid;
     }
 
@@ -56,11 +56,8 @@ public class User {
         this.uid = uid;
     }
 
-    public EventDetails getEvents() {
-        return events;
-    }
-
-    public void setEvents(EventDetails events) {
-        this.events = events;
+    @Override
+    public String toString() {
+        return getUsername();
     }
 }
