@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.roi.greenberg.michayavlemi.models.Item;
 
 /**
  * Created by moti5321 on 13/03/2018.

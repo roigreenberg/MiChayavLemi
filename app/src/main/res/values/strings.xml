@@ -11,4 +11,7 @@
     <string name="hint_item_name">Item name</string>
     <string name="hint_user_name">User name</string>
     <string name="hint_price">Price</string>
+    <string name="total">Total</string>
+    <string name="colon">:</string>
+    <string name="average">Average</string>
 </resources>

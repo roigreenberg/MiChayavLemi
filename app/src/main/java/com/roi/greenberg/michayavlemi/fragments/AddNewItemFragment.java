@@ -2,12 +2,10 @@ package com.roi.greenberg.michayavlemi.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,24 +14,16 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseArray;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.roi.greenberg.michayavlemi.EventActivity;
-import com.roi.greenberg.michayavlemi.EventDetails;
-import com.roi.greenberg.michayavlemi.Item;
-import com.roi.greenberg.michayavlemi.MainActivity;
+import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.R;
-import com.roi.greenberg.michayavlemi.User;
-import com.roi.greenberg.michayavlemi.utils.Constants;
+import com.roi.greenberg.michayavlemi.models.User;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by greenberg on 19/03/2018.

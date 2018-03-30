@@ -1,9 +1,6 @@
-package com.roi.greenberg.michayavlemi;
+package com.roi.greenberg.michayavlemi.models;
 
 import com.google.firebase.database.Exclude;
-import com.roi.greenberg.michayavlemi.utils.Constants;
-
-import java.util.HashMap;
 
 /**
  * Created by moti5321 on 15/03/2018.

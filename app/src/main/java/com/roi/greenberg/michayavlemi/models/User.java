@@ -1,4 +1,4 @@
-package com.roi.greenberg.michayavlemi;
+package com.roi.greenberg.michayavlemi.models;
 
 import android.net.Uri;
 
