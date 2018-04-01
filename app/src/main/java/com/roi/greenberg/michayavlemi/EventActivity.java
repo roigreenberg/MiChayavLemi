@@ -1,5 +1,6 @@
 package com.roi.greenberg.michayavlemi;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -24,8 +26,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.roi.greenberg.michayavlemi.fragments.AddNewItemFragment;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.models.UserWithExpenses;
+import com.roi.greenberg.michayavlemi.utils.Utils;
 
 import java.util.ArrayList;
+
+import static com.roi.greenberg.michayavlemi.utils.Utils.initRecycleView;
 
 public class EventActivity extends AppCompatActivity{
     private ArrayList<Item> mItems;
@@ -111,29 +116,38 @@ public class EventActivity extends AppCompatActivity{
                 .setQuery(itemsQuery, Item.class)
                 .build();
         ItemAdapter itemAdapter = new ItemAdapter(ItemOptions);
-        initRecycleView(R.id.rv_event, itemAdapter);
+        initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event), itemAdapter);
 
         Query expensesQuery = mFirebaseDatabase.child("events").child(mEventId).child("users");
         FirebaseRecyclerOptions<UserWithExpenses> ExpensesOptions = new FirebaseRecyclerOptions.Builder<UserWithExpenses>()
                 .setQuery(expensesQuery, UserWithExpenses.class)
                 .build();
         ExpensesAdapter expensesAdapter = new ExpensesAdapter(ExpensesOptions);
-        initRecycleView(R.id.rv_event_bottom_sheet, expensesAdapter);
+        initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event_bottom_sheet), expensesAdapter);
 
+        final Button transactionsButton = findViewById(R.id.bt_require_transactions);
+        transactionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                Intent transactionsIntent = new Intent(v.getContext(),TransactionsActivity.class);
+                transactionsIntent.putExtra("EXTRA_REF", mEventId);
+                v.getContext().startActivity(transactionsIntent);
+            }
+        });
     }
 
-    /**
-     * RecycleView initial
-     */
-    private <A extends FirebaseRecyclerAdapter, C> void initRecycleView(@IdRes int id, A adapter) {
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(id);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-//        mLayoutManager.setReverseLayout(true);//list order
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        adapter.startListening();
-        mRecyclerView.setAdapter(adapter);
-    }
+//    /**
+//     * RecycleView initial
+//     */
+//    private <A extends FirebaseRecyclerAdapter, C> void initRecycleView(@IdRes int id, A adapter) {
+//        RecyclerView mRecyclerView = (RecyclerView) findViewById(id);
+//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+////        mLayoutManager.setReverseLayout(true);//list order
+//        mRecyclerView.setLayoutManager(mLayoutManager);
+//
+//        adapter.startListening();
+//        mRecyclerView.setAdapter(adapter);
+//    }
 
 
 }

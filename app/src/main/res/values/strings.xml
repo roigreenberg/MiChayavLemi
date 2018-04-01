@@ -14,4 +14,8 @@
     <string name="total">Total</string>
     <string name="colon">:</string>
     <string name="average">Average</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="amount">Amount</string>
+    <string name="require_transactions">Require Transactions</string>
 </resources>
