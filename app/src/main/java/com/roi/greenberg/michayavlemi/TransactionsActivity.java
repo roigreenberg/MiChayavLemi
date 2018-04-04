@@ -3,6 +3,7 @@ package com.roi.greenberg.michayavlemi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -20,6 +21,7 @@ public class TransactionsActivity extends AppCompatActivity {
 
 
     private DatabaseReference mFirebaseDatabase;
+    private TransactionsAdapter mTransactionsAdapter;
     public String mEventId;
 
     @Override
@@ -30,9 +32,10 @@ public class TransactionsActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             mEventId = extras.getString("EXTRA_REF");
-            if (mEventId == null)
+            if (mEventId == null) {
+                Log.d("TA", " no eventId");
                 return;
-
+            }
         } else {
             return;
         }
@@ -42,11 +45,22 @@ public class TransactionsActivity extends AppCompatActivity {
         FirebaseRecyclerOptions<Transaction> transactionOptions = new FirebaseRecyclerOptions.Builder<Transaction>()
                 .setQuery(transactionQuery, Transaction.class)
                 .build();
-        TransactionsAdapter transactionsAdapter = new TransactionsAdapter(transactionOptions);
-        initRecycleView(this, (RecyclerView) findViewById(R.id.rv_transaction), transactionsAdapter);
+        mTransactionsAdapter = new TransactionsAdapter(transactionOptions);
+        initRecycleView(this, (RecyclerView) findViewById(R.id.rv_transaction), mTransactionsAdapter);
 
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mTransactionsAdapter.startListening();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mTransactionsAdapter.stopListening();
     }
 
 

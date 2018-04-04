@@ -37,7 +37,7 @@ public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.E
         return new EventHolder(view);
     }
 
-    public class EventHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class EventHolder extends SelectableAdapter.SelectableHolder{
 
         TextView mTextViewEventName;
         TextView mTextViewEventDay;
@@ -48,6 +48,7 @@ public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.E
         EventHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
             mTextViewEventName = itemView.findViewById(R.id.textViewEventName);
             mTextViewEventDay = itemView.findViewById(R.id.textViewEventDay);
             mTextViewEventDate = itemView.findViewById(R.id.textViewEventDate);
@@ -64,12 +65,18 @@ public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.E
 
         @Override
         public void onClick(View v) {
-            Log.d("EVENT", v.getTag().toString());
+            Log.d("EVENT", "onClick" + v.getTag().toString());
             int position = (int) v.getTag();
             String key = getRef(position).getKey();
             Intent eventIntent = new Intent(v.getContext(),EventActivity.class);
             eventIntent.putExtra("EXTRA_REF", key);
             v.getContext().startActivity(eventIntent);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Log.d("EVENT", "onLongClick");
+            return super.onLongClick(v);
         }
     }
 }

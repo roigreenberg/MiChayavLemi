@@ -30,31 +30,9 @@ public class ItemAdapter extends SelectableAdapter<Item, ItemAdapter.ItemHolder>
 
     }
 
-/**
- * ViewHolder
- */
-public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    TextView productName;
-    TextView productUser;
-    TextView productPrice;
-
-    public ItemHolder(View itemView) {
-        super(itemView);
-        productName = itemView.findViewById(R.id.tv_item_name);
-        productUser = itemView.findViewById(R.id.tv_user);
-        productPrice = itemView.findViewById(R.id.tv_price);
-    }
-
+    @NonNull
     @Override
-    public void onClick(View view) {
-        int clickPosition = getAdapterPosition();
-    }
-
-}
-
-
-    @Override
-    public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.item, parent, false);
         return new ItemHolder(view);
@@ -63,6 +41,7 @@ public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickL
 
     @Override
     protected void onBindViewHolder(@NonNull ItemHolder holder, int position, @NonNull Item item) {
+        super.onBindViewHolder(holder, position, item);
         holder.productName.setText(item.getName());
         if (item.getUser() != null && item.getBuyerName() != null && !item.getBuyerName().isEmpty())
             holder.productUser.setText(item.getBuyerName());
@@ -75,7 +54,39 @@ public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickL
     }
 
 
+    /**
+     * ViewHolder
+     */
+    public class ItemHolder extends SelectableAdapter.SelectableHolder{
+        TextView productName;
+        TextView productUser;
+        TextView productPrice;
 
+        public ItemHolder(View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+            productName = itemView.findViewById(R.id.tv_item_name);
+            productUser = itemView.findViewById(R.id.tv_user);
+            productPrice = itemView.findViewById(R.id.tv_price);
+        }
+
+        @Override
+        public void onClick(View view)
+        {
+            super.onClick(view);
+            int clickPosition = getAdapterPosition();
+        }
+
+        @Override
+        public boolean onLongClick(View view)
+        {
+            super.onLongClick(view);
+            int clickPosition = getAdapterPosition();
+            return true;
+        }
+
+    }
 
 
 }

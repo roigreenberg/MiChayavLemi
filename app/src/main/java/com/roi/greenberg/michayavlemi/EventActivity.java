@@ -2,21 +2,22 @@ package com.roi.greenberg.michayavlemi;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,16 +27,22 @@ import com.google.firebase.database.ValueEventListener;
 import com.roi.greenberg.michayavlemi.fragments.AddNewItemFragment;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.models.UserWithExpenses;
-import com.roi.greenberg.michayavlemi.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import static com.roi.greenberg.michayavlemi.utils.Utils.initRecycleView;
+import static com.roi.greenberg.michayavlemi.utils.Constants.*;
+import static com.roi.greenberg.michayavlemi.utils.Utils.*;
 
 public class EventActivity extends AppCompatActivity{
     private ArrayList<Item> mItems;
-    private DatabaseReference mFirebaseDatabase;
-    public String mEventId;
+    private DatabaseReference mFirebaseDatabase, mEventRef;
+    private ItemAdapter mItemAdapter;
+    private ExpensesAdapter mExpensesAdapter;
+    public String mEventId, mEventName;
+    public String mUserId, mUserName;
+    public String[] childRef = {"totalexpenses", "average"};
+    public HashMap<String, ValueEventListener> childListeners = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +64,29 @@ public class EventActivity extends AppCompatActivity{
 
 
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fUser != null) {
+            mUserId = fUser.getUid();
+            mUserName = fUser.getDisplayName();
+        } else {
+            mUserId = "";
+            mUserName = "Anonymous";
+        }
 
+        mEventRef = mFirebaseDatabase.child(EVENTS).child(mEventId);
+
+        mEventRef.child("details").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                EventDetails eventDetails = dataSnapshot.getValue(EventDetails.class);
+                mEventName = eventDetails.getName();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,45 +114,26 @@ public class EventActivity extends AppCompatActivity{
             }
         });
 
-        mFirebaseDatabase.child("events").child(mEventId).child("totalexpenses").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long total = dataSnapshot.getValue(Long.class);
-                eventTotal.setText(String.valueOf(total));
-            }
+        childListeners.put("totalexpenses", addLongListener(eventTotal));
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+        childListeners.put("average", addLongListener(eventAvg));
 
-            }
-        });
 
-        mFirebaseDatabase.child("events").child(mEventId).child("average").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long avg = dataSnapshot.getValue(Long.class);
-                eventAvg.setText(String.valueOf(avg));
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        Query itemsQuery = mFirebaseDatabase.child("events").child(mEventId).child("items");
+        Query itemsQuery = mEventRef.child(ITEMS);
         FirebaseRecyclerOptions<Item> ItemOptions = new FirebaseRecyclerOptions.Builder<Item>()
                 .setQuery(itemsQuery, Item.class)
                 .build();
-        ItemAdapter itemAdapter = new ItemAdapter(ItemOptions);
-        initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event), itemAdapter);
+        mItemAdapter = new ItemAdapter(ItemOptions);
+        initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event), mItemAdapter);
 
-        Query expensesQuery = mFirebaseDatabase.child("events").child(mEventId).child("users");
+        Query expensesQuery = mEventRef.child(USERS);
         FirebaseRecyclerOptions<UserWithExpenses> ExpensesOptions = new FirebaseRecyclerOptions.Builder<UserWithExpenses>()
                 .setQuery(expensesQuery, UserWithExpenses.class)
                 .build();
-        ExpensesAdapter expensesAdapter = new ExpensesAdapter(ExpensesOptions);
-        initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event_bottom_sheet), expensesAdapter);
+        mExpensesAdapter = new ExpensesAdapter(ExpensesOptions);
+        initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event_bottom_sheet), mExpensesAdapter);
+
 
         final Button transactionsButton = findViewById(R.id.bt_require_transactions);
         transactionsButton.setOnClickListener(new View.OnClickListener() {
@@ -136,18 +146,63 @@ public class EventActivity extends AppCompatActivity{
         });
     }
 
-//    /**
-//     * RecycleView initial
-//     */
-//    private <A extends FirebaseRecyclerAdapter, C> void initRecycleView(@IdRes int id, A adapter) {
-//        RecyclerView mRecyclerView = (RecyclerView) findViewById(id);
-//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
-////        mLayoutManager.setReverseLayout(true);//list order
-//        mRecyclerView.setLayoutManager(mLayoutManager);
-//
-//        adapter.startListening();
-//        mRecyclerView.setAdapter(adapter);
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        for (String ref: childRef) {
+            mEventRef.child(ref).addValueEventListener(childListeners.get(ref));
+        }
+
+        mItemAdapter.startListening();
+        mExpensesAdapter.startListening();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        for (String ref: childRef) {
+            mEventRef.child(ref).removeEventListener(childListeners.get(ref));
+        }
+
+        mItemAdapter.stopListening();
+        mExpensesAdapter.stopListening();
+
+
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_event, menu);
+        return true;
+    }
+
+    /**
+     * Callback invoked when a menu item was selected from this Activity's menu.
+     *
+     * @param item The menu item that was selected by the user
+     *
+     * @return true if you handle the menu click here, false otherwise
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+
+
+        switch (item.getItemId()) {
+            case R.id.share_list_menu:
+                ShareList(this, mUserName, mEventName, mEventId);
+
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
 
 }

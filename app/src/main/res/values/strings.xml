@@ -18,4 +18,5 @@
     <string name="to">To</string>
     <string name="amount">Amount</string>
     <string name="require_transactions">Require Transactions</string>
+    <string name="share">Share</string>
 </resources>

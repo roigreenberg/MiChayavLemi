@@ -1,29 +1,40 @@
 package com.roi.greenberg.michayavlemi;
 
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.roi.greenberg.michayavlemi.models.Item;
 
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class SelectableAdapter<T, K extends RecyclerView.ViewHolder> extends FirebaseRecyclerAdapter<T,K> {
+class SelectableAdapter<T, K extends SelectableAdapter.SelectableHolder> extends FirebaseRecyclerAdapter<T,K> {
     @SuppressWarnings("unused")
     private static final String TAG = SelectableAdapter.class.getSimpleName();
 
     private SparseBooleanArray selectedItems;
+    private boolean mode;
+
 
 
 
     SelectableAdapter(FirebaseRecyclerOptions<T> options) {
         super(options);
-        Log.d("SelectableAdapter", "here");
+        Log.d(TAG, "SelectableAdapter");
         selectedItems = new SparseBooleanArray();
+        mode = true;
     }
+
+
 
     /**
      * Indicates if the item at position position is selected
@@ -76,5 +87,70 @@ abstract class SelectableAdapter<T, K extends RecyclerView.ViewHolder> extends F
             items.add(selectedItems.keyAt(i));
         }
         return items;
+    }
+
+    @Override
+    protected void onBindViewHolder(@NonNull K holder, int position, @NonNull T model) {
+
+        holder.setSelection(isSelected(position));
+
+    }
+
+
+
+    @NonNull
+    @Override
+    public K onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return null;
+    }
+
+    public boolean isSelectedMode(){ return mode;}
+    public void setSelectedMode(boolean mode) {this.mode = mode;}
+
+    public void OnClick(int position, boolean isLong){
+        Log.d(TAG, "On"+ (isLong? "Long" :"") +"Click pos " + position);
+        if (isLong || isSelectedMode()) {
+            toggleSelection(position);
+        }
+
+
+    }
+
+
+
+    public class SelectableHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+
+
+        public SelectableHolder(View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+
+
+        }
+
+        public void setSelection(boolean isSelected) {
+            Log.d("ROIGR", "set selection " + isSelected);
+            if (isSelected) {
+                itemView.setBackgroundResource(R.color.selectedItem);
+            } else {
+                itemView.setBackgroundResource(R.color.transparent);
+            }
+        }
+
+        public void bindItem() {
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            OnClick(getAdapterPosition(), false);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            OnClick(getAdapterPosition(), true);
+            return true;
+        }
     }
 }

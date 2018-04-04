@@ -1,5 +1,6 @@
 package com.roi.greenberg.michayavlemi;
 
+import android.content.DialogInterface;
 import android.support.v4.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +22,8 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +34,12 @@ import com.roi.greenberg.michayavlemi.models.User;
 
 import java.util.Arrays;
 import java.util.List;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.roi.greenberg.michayavlemi.models.UserWithExpenses;
+import com.roi.greenberg.michayavlemi.utils.Constants;
+
+import static com.roi.greenberg.michayavlemi.utils.Constants.*;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -54,7 +64,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
+        mContext = this;
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         Log.d(TAG, "before auth");
@@ -130,8 +140,8 @@ public class MainActivity extends AppCompatActivity{
         mEventAdapter = new EventAdapter(this, options);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         mRecyclerView.setLayoutManager(layoutManager);
-        mEventAdapter.startListening();
         mRecyclerView.setAdapter(mEventAdapter);
+        mEventAdapter.startListening();
 
         //Button btnToListOfProducts = findViewById(R.id.btn_item_list_of_products);
         //btnToListOfProducts.setOnClickListener(new View.OnClickListener() {
@@ -224,76 +234,53 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-//        FirebaseDynamicLinks.getInstance().getDynamicLink(getIntent())
-//                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
-//                    @Override
-//                    public void onSuccess(PendingDynamicLinkData data) {
-//                        if (data == null) {
-//                            Log.d(TAG, "getInvitation: no data");
-//                            return;
-//                        }
-//
-//                        // Get the deep link
-//                        Uri deepLink = data.getLink();
-//
-//                        // Extract invite
-//                        FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(data);
-//                        if (invite != null) {
-//                            String invitationId = invite.getInvitationId();
-//                        }
-//
-//                        // Handle the deep link
-//                        // [START_EXCLUDE]
-//                        Log.d(TAG, "deepLink:" + deepLink);
-//                        if (deepLink != null) {
-//
-//                            String userID = deepLink.getQueryParameter("UserID"); //TODO is it needed?
-//                            final String listID = deepLink.getQueryParameter("ListID"); //TODO change name
-//                            if (userID == null || listID == null)
-//                                return;
-//                            //Toast.makeText(MainActivity.this, "UserID= " +userID + "ListID= " + listID, Toast.LENGTH_LONG).show();
-//
-//                            mDatabaseReference.child(LISTS).orderByChild("listID").equalTo(listID).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(DataSnapshot dataSnapshot) {
-//                                    if (dataSnapshot.getValue() == null) {
-//                                        Toast.makeText(MainActivity.this, "List not exists!", Toast.LENGTH_SHORT).show();
-//                                    } else {
-//                                        //add new item name to SList
-//                                        final DatabaseReference userRef = mDatabaseReference.child(USERS).child(mUserID).child(LISTS);
-//                                        userRef.orderByChild("listID").equalTo(listID).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                            @Override
-//                                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                                if(dataSnapshot.getValue() != null) {
-//                                                    Toast.makeText(MainActivity.this, "List already exists!", Toast.LENGTH_SHORT).show();
-//                                                } else {
-//                                                    userRef.push().setValue(new ListForUser(listID));
-//
-//                                                    DatabaseReference ref = mDatabaseReference.child(LISTS).child(listID);
-//                                                    ref.child(USERS).child(mUserID).setValue("user");
-//
-//                                                    //update ListView adapter
-//                                                    mOwnListAdapter.notifyDataSetChanged();
-//                                                    Toast.makeText(MainActivity.this, "Adding sucessful!", Toast.LENGTH_SHORT).show();
-//                                                }
-//                                            }
-//
-//                                            @Override
-//                                            public void onCancelled(DatabaseError databaseError) {
-//
-//                                            }
-//                                        });
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(DatabaseError databaseError) {
-//
-//                                }
-//                            });
-//                        }
-//                    }
-//                });
+        FirebaseDynamicLinks.getInstance().getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData data) {
+                        if (data == null) {
+                            Log.d(TAG, "getInvitation: no data");
+                            return;
+                        }
+
+                        // Get the deep link
+                        Uri deepLink = data.getLink();
+
+                        // Extract invite
+                        FirebaseAppInvite invite = FirebaseAppInvite.getInvitation(data);
+                        if (invite != null) {
+                            String invitationId = invite.getInvitationId();
+                        }
+
+                        // Handle the deep link
+                        // [START_EXCLUDE]
+                        Log.d(TAG, "deepLink:" + deepLink);
+                        if (deepLink != null) {
+
+                            String userName = deepLink.getQueryParameter(USER_NAME); //TODO is it needed?
+                            final String eventName = deepLink.getQueryParameter(EVENT_NAME); //TODO change name
+                            final String eventId = deepLink.getQueryParameter(EVENT_ID); //TODO change name
+                            if (userName == null || eventId == null) {
+                                return;
+                            }
+                            //Toast.makeText(MainActivity.this, "UserID= " +userID + "ListID= " + listID, Toast.LENGTH_LONG).show();
+
+                            new AlertDialog.Builder(mContext)
+                                    .setTitle("Are you sure you want to add a new event?")
+                                    .setMessage(userName + " invite you to join " + eventName)
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                                        public void onClick(DialogInterface dialog, int whichButton) {
+                                            Toast.makeText(MainActivity.this, "Yaay", Toast.LENGTH_SHORT).show();
+                                            mDatabaseReference.child(EVENTS).child(eventId).child(USERS).child(MainActivity.mUser.getUid()).setValue(new UserWithExpenses(MainActivity.mUser, 0));
+                                        }})
+                                    .setNegativeButton(android.R.string.no, null).show();
+
+
+                        }
+                    }
+                });
 
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
@@ -304,8 +291,17 @@ public class MainActivity extends AppCompatActivity{
         if (mAuthStateListener != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
+
         //mOwnListAdapter.cleanup();
         //detachDatabaseReadListener();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mEventAdapter != null) {
+            mEventAdapter.stopListening();
+        }
     }
 
     @Override

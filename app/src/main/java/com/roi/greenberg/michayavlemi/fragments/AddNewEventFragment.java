@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.roi.greenberg.michayavlemi.EventDetails;
 import com.roi.greenberg.michayavlemi.MainActivity;
 import com.roi.greenberg.michayavlemi.R;
+import com.roi.greenberg.michayavlemi.models.UserWithExpenses;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -105,8 +106,7 @@ public class AddNewEventFragment extends DialogFragment implements
                             Map<String, Object> childUpdates = new HashMap<>();
 
                             childUpdates.put("/events/" + eventKey + "/details", eventDetailsValues);
-                            childUpdates.put("/events/" + eventKey + "/users/" + MainActivity.mUser.getUid() + "/details", MainActivity.mUser);
-                            childUpdates.put("/events/" + eventKey + "/users/" + MainActivity.mUser.getUid() + "/expenses", 0);
+                            childUpdates.put("/events/" + eventKey + "/users/" + MainActivity.mUser.getUid(), new UserWithExpenses(MainActivity.mUser, 0));
                             FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates);
                             dialogInterface.dismiss();
                         } else {
