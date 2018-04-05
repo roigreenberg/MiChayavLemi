@@ -278,7 +278,6 @@ public class EventActivity extends AppCompatActivity{
                 default:
                     return false;
             }
-            adapter.setSelectedMode(false);
             mode.finish();
             return true;
         }
