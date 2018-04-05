@@ -38,6 +38,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.roi.greenberg.michayavlemi.models.UserWithExpenses;
 import com.roi.greenberg.michayavlemi.utils.Constants;
+import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
 
 import static com.roi.greenberg.michayavlemi.utils.Constants.*;
 
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mContext = this;
         mFirebaseAuth = FirebaseAuth.getInstance();
 
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity{
                 .setQuery(eventRef, EventDetails.class)
                 .build();
 
-        mEventAdapter = new EventAdapter(this, options);
+        mEventAdapter = new EventAdapter(options, this);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mEventAdapter);

@@ -1,10 +1,10 @@
 package com.roi.greenberg.michayavlemi;
 
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,14 +13,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
 
 import java.util.Date;
 
-public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.EventHolder> {
+public class EventAdapter extends SelectableFirebaseRecyclerAdapter<EventDetails, EventAdapter.EventHolder> {
 
 
-    EventAdapter(Context context, FirebaseRecyclerOptions<EventDetails> options) {
-        super(options);
+    EventAdapter(FirebaseRecyclerOptions<EventDetails> options, AppCompatActivity activity) {
+        super(options, activity);
     }
 
     @Override
@@ -37,7 +38,7 @@ public class EventAdapter extends SelectableAdapter<EventDetails, EventAdapter.E
         return new EventHolder(view);
     }
 
-    public class EventHolder extends SelectableAdapter.SelectableHolder{
+    public class EventHolder extends SelectableFirebaseRecyclerAdapter.SelectableHolder{
 
         TextView mTextViewEventName;
         TextView mTextViewEventDay;

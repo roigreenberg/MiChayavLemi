@@ -1,20 +1,27 @@
 package com.roi.greenberg.michayavlemi;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.roi.greenberg.michayavlemi.models.Item;
+import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
+
+//import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
 
 /**
  * Created by moti5321 on 13/03/2018.
  */
 
-public class ItemAdapter extends SelectableAdapter<Item, ItemAdapter.ItemHolder>{
+public class ItemAdapter extends SelectableFirebaseRecyclerAdapter<Item, ItemAdapter.ItemHolder> {
 
 //private ArrayList<Item> mProducts;
 //final private ItemClickListener mOnClickListener;
@@ -25,8 +32,10 @@ public class ItemAdapter extends SelectableAdapter<Item, ItemAdapter.ItemHolder>
 //}
 
     //Constructor
-    ItemAdapter(FirebaseRecyclerOptions<Item> options) {
-        super(options);
+    ItemAdapter(FirebaseRecyclerOptions<Item> options, AppCompatActivity activity) {
+        super(options, activity);
+        EventActionModeCallback eventActionModeCallback = new EventActionModeCallback(activity, R.menu.selected_menu);
+        setActionModeCallback(eventActionModeCallback);
 
     }
 
@@ -57,7 +66,7 @@ public class ItemAdapter extends SelectableAdapter<Item, ItemAdapter.ItemHolder>
     /**
      * ViewHolder
      */
-    public class ItemHolder extends SelectableAdapter.SelectableHolder{
+    public class ItemHolder extends SelectableFirebaseRecyclerAdapter.SelectableHolder{
         TextView productName;
         TextView productUser;
         TextView productPrice;
@@ -86,6 +95,19 @@ public class ItemAdapter extends SelectableAdapter<Item, ItemAdapter.ItemHolder>
             return true;
         }
 
+    }
+
+    private class EventActionModeCallback extends SelectableFirebaseRecyclerAdapter<Item, ItemAdapter.ItemHolder>.SelectableActionModeCallback
+    {
+
+        EventActionModeCallback(Context context, int menu_layout) {
+            super(context, menu_layout);
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return super.onActionItemClicked(mode, item);
+        }
     }
 
 

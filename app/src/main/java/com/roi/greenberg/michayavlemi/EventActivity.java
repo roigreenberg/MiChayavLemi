@@ -1,5 +1,6 @@
 package com.roi.greenberg.michayavlemi;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,6 +8,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.roi.greenberg.michayavlemi.fragments.AddNewItemFragment;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.models.UserWithExpenses;
+import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +64,7 @@ public class EventActivity extends AppCompatActivity{
         } else {
             return;
         }
+
 
 
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
@@ -124,7 +128,7 @@ public class EventActivity extends AppCompatActivity{
         FirebaseRecyclerOptions<Item> ItemOptions = new FirebaseRecyclerOptions.Builder<Item>()
                 .setQuery(itemsQuery, Item.class)
                 .build();
-        mItemAdapter = new ItemAdapter(ItemOptions);
+        mItemAdapter = new ItemAdapter(ItemOptions, this);
         initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event), mItemAdapter);
 
         Query expensesQuery = mEventRef.child(USERS);
@@ -203,6 +207,8 @@ public class EventActivity extends AppCompatActivity{
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
 
 }
