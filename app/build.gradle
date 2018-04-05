@@ -40,7 +40,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-invites:12.0.1'
     //    implementation 'com.android.support:animated-vector-drawable:26.1.0'
 //    implementation project(':selectablefirebaserecycleradapter')
-    implementation 'com.github.roigreenberg:SelectableFirebaseAdapter:0.0.1'
+    implementation 'com.github.roigreenberg:SelectableFirebaseAdapter:master-SNAPSHOT'
 }
 
 apply plugin: 'com.google.gms.google-services'

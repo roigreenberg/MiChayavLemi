@@ -1,15 +1,18 @@
 package com.roi.greenberg.michayavlemi;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -148,6 +151,10 @@ public class EventActivity extends AppCompatActivity{
                 v.getContext().startActivity(transactionsIntent);
             }
         });
+
+        EventActionModeCallback eventActionModeCallback = new EventActionModeCallback(this, mItemAdapter, R.menu.selected_menu);
+        mItemAdapter.setActionMode(eventActionModeCallback);
+
     }
 
     @Override
@@ -209,6 +216,102 @@ public class EventActivity extends AppCompatActivity{
     }
 
 
+    private class EventActionModeCallback extends SelectableFirebaseRecyclerAdapter.SelectableActionModeCallback
+    {
+        private SelectableFirebaseRecyclerAdapter adapter;
+        EventActionModeCallback(Context context, SelectableFirebaseRecyclerAdapter adapter, int menu_layout) {
+            super(context, adapter, menu_layout);
+            this.adapter = adapter;
+        }
 
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.menu_delete:
+                    // TODO: actually remove items
+                    final DatabaseReference items = FirebaseDatabase.getInstance().getReference().child(ITEMS);
+                    for (int i = adapter.getItemCount() - 1; i >= 0; i--) {
+                        if (adapter.isSelected(i)){
+                            adapter.getRef(i).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Log.d("RROI", "delete item " + dataSnapshot.getValue().toString());
+                                    dataSnapshot.getRef().removeValue();
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                            adapter.getRef(i).setValue(null);
+                        }
+                    }
+
+                    break;
+                case R.id.menu_users_picker:
+//                    showAssigningDialog(mode);
+                    break;
+
+                case R.id.menu_edit_item:
+//                    int pos;
+//                    final DatabaseReference itemRef;
+//
+//                    pos = (int) adapter.getSelectedItems().get(0);
+//                    itemRef = adapter.getRef(pos).child("itemID");
+//                    itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            String itemID = (String) dataSnapshot.getValue();
+//                            Intent editItemIntent = new Intent(ListActivity.this, EditItemActivity.class);
+//                            editItemIntent.putExtra("EXTRA_REF", itemID);
+//                            startActivityForResult(editItemIntent, EDIT_REQUEST);
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//
+//                        }
+//                  });
+                    break;
+
+                default:
+                    return false;
+            }
+            adapter.setSelectedMode(false);
+            mode.finish();
+            return true;
+        }
+
+//        private void showAssigningDialog(final ActionMode mode) {
+//
+//            final CharSequence[] charSequenceItems = users.toArray(new CharSequence[users.size()]);
+//            Log.d("RROI", charSequenceItems[0].toString());
+//            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+//            builder.setTitle("Assign items to:");
+//            builder.setItems(charSequenceItems, new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    Log.e("RROI", "on picker");
+//                    for (int i = adapter.getItemCount() - 1; i >= 0; i--) {
+//                        ItemAdapter.ItemHolder itemHolder = (ItemAdapter.ItemHolder) adapter.getItem(i);
+//                        if (adapter.isSelected(i)){
+//                            Log.e("RROI", "Before " + adapter.getRef(i).child("assignee").toString());
+//                            adapter.getRef(i).child("assignee").setValue(charSequenceItems[which].toString());
+//                            adapter.notifyItemChanged(i);
+//                            Log.e("RROI", "After " + adapter.getRef(i).child("assignee").toString());
+//                        }
+//                    }
+//
+//                    Log.d(TAG, "menu_users_picker");
+//                    //itemAdapter.notifyDataSetChanged();
+//                    //doneItemAdapter.notifyDataSetChanged();
+//                    mode.finish();
+//                }
+//            });
+//            AlertDialog b = builder.create();
+//            b.show();
+//        }
+    }
 
 }

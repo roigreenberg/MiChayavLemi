@@ -2,9 +2,12 @@ package com.roi.greenberg.michayavlemi;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.print.PrinterId;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +15,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
 
@@ -31,12 +40,11 @@ public class ItemAdapter extends SelectableFirebaseRecyclerAdapter<Item, ItemAda
 //    void onListItemClick(int clickItemIndex);
 //}
 
+    private Query query;
+
     //Constructor
     ItemAdapter(FirebaseRecyclerOptions<Item> options, AppCompatActivity activity) {
         super(options, activity);
-        EventActionModeCallback eventActionModeCallback = new EventActionModeCallback(activity, R.menu.selected_menu);
-        setActionModeCallback(eventActionModeCallback);
-
     }
 
     @NonNull
@@ -96,19 +104,5 @@ public class ItemAdapter extends SelectableFirebaseRecyclerAdapter<Item, ItemAda
         }
 
     }
-
-    private class EventActionModeCallback extends SelectableFirebaseRecyclerAdapter<Item, ItemAdapter.ItemHolder>.SelectableActionModeCallback
-    {
-
-        EventActionModeCallback(Context context, int menu_layout) {
-            super(context, menu_layout);
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            return super.onActionItemClicked(mode, item);
-        }
-    }
-
 
 }

@@ -6,16 +6,22 @@ import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.roi.greenberg.michayavlemi.models.User;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 import static com.roi.greenberg.michayavlemi.utils.Constants.*;
 
@@ -73,4 +79,31 @@ public class Utils {
         sendIntent.setType("text/plain");
         context.startActivity(sendIntent);
     }
+
+    public static ArrayList<User> getUserNames(Query query) {
+        final ArrayList<User> allUsers = new ArrayList<>();
+
+        allUsers.add(new User("Select user...", null, null, null));
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userData: dataSnapshot.getChildren()) {
+                    Log.d("ADDITEM", userData.toString());
+                    User user = userData.child("details").getValue(User.class);
+                    if (user != null) {
+                        Log.d("ADDITEM", user.getUsername());
+                        allUsers.add(user);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return allUsers;
+    }
+
 }

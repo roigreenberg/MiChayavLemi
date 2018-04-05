@@ -17,11 +17,13 @@ import android.widget.Toast;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.roi.greenberg.michayavlemi.EventActivity;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.models.User;
+import com.roi.greenberg.michayavlemi.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -50,31 +52,13 @@ public class AddNewItemFragment extends DialogFragment {
 //        Button mButtonOk = mView.findViewById(R.id.btnOk);
 //        Button mButtonCancel = mView.findViewById(R.id.btnCancel);
 
-        allUsers = new ArrayList<>();
-
-        allUsers.add(new User("Select user...", null, null, null));
-        FirebaseDatabase.getInstance().getReference()
+        Query userNameQuery = FirebaseDatabase.getInstance().getReference()
                 .child("events")
                 .child(eventActivity.mEventId)
                 .child("users")
-                .orderByChild("details/username").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot userData: dataSnapshot.getChildren()) {
-                    Log.d("ADDITEM", userData.toString());
-                    User user = userData.child("details").getValue(User.class);
-                    if (user != null) {
-                        Log.d("ADDITEM", user.getUsername());
-                        allUsers.add(user);
-                    }
-                }
-            }
+                .orderByChild("details/username");
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        allUsers = Utils.getUserNames(userNameQuery);
 
         Log.d("ADDITEM", allUsers.toString());
 
