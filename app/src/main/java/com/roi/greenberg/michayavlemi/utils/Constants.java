@@ -12,5 +12,6 @@ public class Constants {
     public static final String EVENT_NAME = "eventName";
     public static final String EVENT_ID = "EventId";
     public static final String ITEMS = "items";
+    public static final String DETAILS = "details";
 
 }
