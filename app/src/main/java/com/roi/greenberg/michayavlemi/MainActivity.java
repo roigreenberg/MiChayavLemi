@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity{
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView = findViewById(R.id.rv_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FirebaseRecyclerOptions<EventDetails> options = new FirebaseRecyclerOptions.Builder<EventDetails>()
@@ -239,7 +239,9 @@ public class MainActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
-        mEventAdapter.startListening();
+        if (mEventAdapter != null) {
+            mEventAdapter.startListening();
+        }
 
         FirebaseDynamicLinks.getInstance().getDynamicLink(getIntent())
             .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
@@ -310,6 +312,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
     }
 
     @Override
