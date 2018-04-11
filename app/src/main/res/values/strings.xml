@@ -22,4 +22,6 @@
     <string name="assign_to">Assign to</string>
     <string name="delete">delete</string>
     <string name="edit_item">Edit</string>
+    <string name="new_item_type_permanent">Permanent</string>
+    <string name="new_item_isbought">Bought?</string>
 </resources>

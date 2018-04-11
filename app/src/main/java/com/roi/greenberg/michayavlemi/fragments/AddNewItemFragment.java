@@ -10,16 +10,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.roi.greenberg.michayavlemi.EventActivity;
+import com.roi.greenberg.michayavlemi.MainActivity;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.models.User;
@@ -36,6 +36,8 @@ public class AddNewItemFragment extends DialogFragment {
     private EditText mItemName;
     private Spinner mUser;
     private EditText mPrice;
+    private CheckBox mIsBought;
+    private Switch mType;
     private ArrayList<User> allUsers;
 
     @NonNull
@@ -49,6 +51,9 @@ public class AddNewItemFragment extends DialogFragment {
         mItemName = mView.findViewById(R.id.et_new_item_name);
         mUser = mView.findViewById(R.id.sp_new_item_user);
         mPrice = mView.findViewById(R.id.et_new_item_price);
+        mIsBought = mView.findViewById(R.id.cb_new_item_isbought);
+        mType = mView.findViewById(R.id.sw_new_item_type);
+
 //        Button mButtonOk = mView.findViewById(R.id.btnOk);
 //        Button mButtonCancel = mView.findViewById(R.id.btnCancel);
 
@@ -87,7 +92,7 @@ public class AddNewItemFragment extends DialogFragment {
                             .child(eventActivity.mEventId)
                             .child("items")
                             .push()
-                            .setValue(new Item(name, user, price));
+                            .setValue(new Item(name, MainActivity.mUser, user, price, mType.isChecked(), mIsBought.isChecked()));
                 } else {
                     Toast.makeText(eventActivity, "Please enter event name", Toast.LENGTH_SHORT).show();
                 }

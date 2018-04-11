@@ -14,6 +14,12 @@
         android:textSize="25sp"
         android:textStyle="bold" />
 
+    <Switch
+        android:id="@+id/sw_new_item_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/new_item_type_permanent" />
+
     <EditText
         android:id="@+id/et_new_item_name"
         android:layout_width="match_parent"
@@ -38,6 +44,12 @@
         android:ems="6"
         android:hint="@string/hint_price"
         android:inputType="number" />
+
+    <CheckBox
+        android:id="@+id/cb_new_item_isbought"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/new_item_isbought" />
 
     <!--<RelativeLayout-->
         <!--android:layout_width="wrap_content"-->
