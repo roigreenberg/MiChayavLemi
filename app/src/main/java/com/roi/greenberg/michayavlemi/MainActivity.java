@@ -282,12 +282,17 @@ public class MainActivity extends AppCompatActivity{
         //detachDatabaseReadListener();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+
 
         if (mEventAdapter != null) {
             mEventAdapter.startListening();
@@ -299,9 +304,6 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onPause() {
         super.onPause();
-        if (mAuthStateListener != null) {
-            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-        }
 
         if (mEventAdapter != null) {
             mEventAdapter.stopListening();
@@ -309,6 +311,16 @@ public class MainActivity extends AppCompatActivity{
 
         //mOwnListAdapter.cleanup();
         //detachDatabaseReadListener();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (mAuthStateListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
+
     }
 
     @Override
