@@ -8,17 +8,23 @@ import com.google.firebase.database.Exclude;
 
 public class Item {
     private String name;
+    private User creator;
     private User user;
     private float price;
+    private boolean type;
+    private boolean isBought;
 
     public Item() {
 
     }
 
-    public Item(String name, User user, float price) {
+    public Item(String name, User creator, User user, float price, boolean type, boolean isBought) {
         this.name = name;
+        this.creator = creator;
         this.user = user;
         this.price = price;
+        this.type = type;
+        this.isBought = isBought;
     }
 
     public String getName() {
@@ -44,6 +50,18 @@ public class Item {
     public void setPrice(float price) {
         this.price = price;
     }
+
+    public User getCreator() { return creator; }
+
+    public void setCreator(User creator) { this.creator = creator; }
+
+    public boolean isType() { return type; }
+
+    public void setType(boolean type) { this.type = type; }
+
+    public boolean isBought() { return isBought; }
+
+    public void setBought(boolean isBought) { this.isBought = isBought; }
 
     @Exclude
     public String getBuyerName() {
