@@ -1,8 +1,10 @@
-package com.roi.greenberg.michayavlemi;
+package com.roi.greenberg.michayavlemi.models;
 
 
 import com.google.firebase.database.Exclude;
+import com.google.firebase.firestore.ServerTimestamp;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +13,7 @@ public class EventDetails {
     private String name;
     private HashMap<String, Object> date;
     private String location;
-
+    private Date timestamp;
 
     public EventDetails() {}
 
@@ -51,6 +53,11 @@ public class EventDetails {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    @ServerTimestamp
+    public Date getTimestamp() { return timestamp; }
+
+    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 
     @Exclude
     public Map<String, Object> toMap() {

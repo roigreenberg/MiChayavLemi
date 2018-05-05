@@ -1,6 +1,7 @@
 package com.roi.greenberg.michayavlemi.models;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 /**
  * Created by greenberg on 16/03/2018.
@@ -15,7 +16,7 @@ public class User {
     public User() {
     }
 
-    public User(String mUsername, String mUserEmail, Uri photoUrl, String uid) {
+    public User(@NonNull String mUsername, String mUserEmail, Uri photoUrl, String uid) {
         this.username = mUsername;
         this.userEmail = mUserEmail;
         if (photoUrl != null) {
@@ -24,6 +25,7 @@ public class User {
         this.uid = uid;
     }
 
+    @NonNull
     public String getUsername() {
         return username;
     }

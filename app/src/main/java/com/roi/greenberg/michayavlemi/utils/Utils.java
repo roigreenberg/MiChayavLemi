@@ -3,20 +3,17 @@ package com.roi.greenberg.michayavlemi.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.roi.greenberg.michayavlemi.models.User;
 
 import java.io.UnsupportedEncodingException;
@@ -27,30 +24,29 @@ import static com.roi.greenberg.michayavlemi.utils.Constants.*;
 
 public class Utils {
 
-    public static ValueEventListener addLongListener(final TextView textView){
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Long total = dataSnapshot.getValue(Long.class);
-                textView.setText(String.valueOf(total));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-    }
+//    public static ValueEventListener addLongListener(final TextView textView){
+//        return new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Long total = dataSnapshot.getValue(Long.class);
+//                textView.setText(java.lang.User.valueOf(total));
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        };
+//    }
 
     /**
      * RecycleView initial
      */
-    public static <A extends FirebaseRecyclerAdapter, C> void initRecycleView(Context context, RecyclerView view, A adapter) {
-        RecyclerView mRecyclerView = view;
+    public static void initRecycleView(Context context, RecyclerView view, FirestoreRecyclerAdapter adapter) {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(context);
 //        mLayoutManager.setReverseLayout(true);//list order
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(adapter);
+        view.setLayoutManager(mLayoutManager);
+        view.setAdapter(adapter);
     }
 
     public static void ShareList(Context context, String userName, String eventName, String eventId){
@@ -81,28 +77,29 @@ public class Utils {
     }
 
     public static ArrayList<User> getUserNames(Query query) {
+        final String TAG = "getUserNames";
         final ArrayList<User> allUsers = new ArrayList<>();
 
         allUsers.add(new User("Select user...", null, null, null));
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot userData: dataSnapshot.getChildren()) {
-                    Log.d("ADDITEM", userData.toString());
-                    User user = userData.child("details").getValue(User.class);
-                    if (user != null) {
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot userData : task.getResult()) {
+                        Log.d(TAG, userData.getId() + " => " + userData.getData());
+                        Log.d("ADDITEM", userData.toString());
+                        User user = userData.toObject(User.class);
                         Log.d("ADDITEM", user.getUsername());
                         allUsers.add(user);
                     }
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
                 }
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
         });
-
+        Log.d("ADDITEM", "finish");
         return allUsers;
     }
 
