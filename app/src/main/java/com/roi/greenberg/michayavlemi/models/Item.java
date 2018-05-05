@@ -1,6 +1,8 @@
 package com.roi.greenberg.michayavlemi.models;
 
-import com.google.firebase.database.Exclude;
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.Date;
 
 /**
  * Created by moti5321 on 15/03/2018.
@@ -8,20 +10,21 @@ import com.google.firebase.database.Exclude;
 
 public class Item {
     private String name;
-    private User creator;
-    private User user;
+    private String creator;
+    private String assignTo;
     private float price;
     private boolean type;
     private boolean isBought;
+    private Date timestamp;
 
     public Item() {
 
     }
 
-    public Item(String name, User creator, User user, float price, boolean type, boolean isBought) {
+    public Item(String name, String creator, String assignTo, float price, boolean type, boolean isBought) {
         this.name = name;
         this.creator = creator;
-        this.user = user;
+        this.assignTo = assignTo;
         this.price = price;
         this.type = type;
         this.isBought = isBought;
@@ -35,12 +38,12 @@ public class Item {
         this.name = name;
     }
 
-    public User getUser() {
-        return user;
+    public String getAssignTo() {
+        return assignTo;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setAssignTo(String assignTo) {
+        this.assignTo = assignTo;
     }
 
     public float getPrice() {
@@ -51,9 +54,9 @@ public class Item {
         this.price = price;
     }
 
-    public User getCreator() { return creator; }
+    public String getCreator() { return creator; }
 
-    public void setCreator(User creator) { this.creator = creator; }
+    public void setCreator(String creator) { this.creator = creator; }
 
     public boolean isType() { return type; }
 
@@ -63,8 +66,9 @@ public class Item {
 
     public void setBought(boolean isBought) { this.isBought = isBought; }
 
-    @Exclude
-    public String getBuyerName() {
-        return user.toString();
-    }
+    @ServerTimestamp
+    public Date getTimestamp() { return timestamp; }
+
+    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
+
 }

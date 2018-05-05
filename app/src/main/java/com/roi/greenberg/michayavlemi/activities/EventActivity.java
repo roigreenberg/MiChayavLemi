@@ -1,14 +1,13 @@
-package com.roi.greenberg.michayavlemi;
+package com.roi.greenberg.michayavlemi.activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
@@ -19,19 +18,32 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.roi.greenberg.advancefirestorerecycleradapter.AdvanceFirestoreRecyclerAdapter;
+import com.roi.greenberg.michayavlemi.R;
+import com.roi.greenberg.michayavlemi.adapters.ExpensesAdapter;
+import com.roi.greenberg.michayavlemi.adapters.ItemAdapter;
 import com.roi.greenberg.michayavlemi.fragments.AddNewItemFragment;
+import com.roi.greenberg.michayavlemi.models.EventDetails;
 import com.roi.greenberg.michayavlemi.models.Item;
-import com.roi.greenberg.michayavlemi.models.UserWithExpenses;
+import com.roi.greenberg.michayavlemi.models.UserInList;
 import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
 
 import java.util.ArrayList;
@@ -41,8 +53,11 @@ import static com.roi.greenberg.michayavlemi.utils.Constants.*;
 import static com.roi.greenberg.michayavlemi.utils.Utils.*;
 
 public class EventActivity extends AppCompatActivity{
+    private static final String TAG = "EventActivity";
     private ArrayList<Item> mItems;
-    private DatabaseReference mFirebaseDatabase, mEventRef;
+//    private DatabaseReference mFirebaseDatabase, mEventRef;
+    private DocumentReference mEventRef;
+    private FirebaseFirestore mFirestoreDatabase;
     private ItemAdapter mItemAdapter;
     private ExpensesAdapter mExpensesAdapter;
     public String mEventId, mEventName;
@@ -70,7 +85,10 @@ public class EventActivity extends AppCompatActivity{
 
 
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+//        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        if(mFirestoreDatabase == null) {
+            mFirestoreDatabase = FirebaseFirestore.getInstance();
+        }
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fUser != null) {
             mUserId = fUser.getUid();
@@ -80,17 +98,39 @@ public class EventActivity extends AppCompatActivity{
             mUserName = "Anonymous";
         }
 
-        mEventRef = mFirebaseDatabase.child(EVENTS).child(mEventId);
+//        mEventRef = mFirebaseDatabase.child(EVENTS).child(mEventId);
+        mEventRef = mFirestoreDatabase.collection(EVENTS).document(mEventId);
 
-        mEventRef.child("details").addListenerForSingleValueEvent(new ValueEventListener() {
+        mEventRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                EventDetails eventDetails = dataSnapshot.getValue(EventDetails.class);
-                mEventName = eventDetails.getName();
-            }
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    Log.d(TAG, "Current data: " + documentSnapshot.getData());
+                    EventDetails eventDetails = documentSnapshot.toObject(EventDetails.class);
+                    if (eventDetails == null) {
+                        return;
+                    }
+                    mEventName = eventDetails.getName();
+                    try {
+                        long total = (long) documentSnapshot.getData().get("totalexpenses");
+                        eventTotal.setText(String.valueOf(total));
+                    } catch (NullPointerException ex) {
+                        Log.d(TAG, ex + "no total expenses");
+                    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                    try {
+                        long avg = (long) documentSnapshot.getData().get("average");
+                        eventAvg.setText(String.valueOf(avg));
+                    } catch (NullPointerException ex) {
+                        Log.d(TAG, ex + "no average");
+                    }
+
+                }
+
 
             }
         });
@@ -121,22 +161,22 @@ public class EventActivity extends AppCompatActivity{
             }
         });
 
-        childListeners.put("totalexpenses", addLongListener(eventTotal));
+//        childListeners.put("totalexpenses", addLongListener(eventTotal));
+//
+//        childListeners.put("average", addLongListener(eventAvg));
 
-        childListeners.put("average", addLongListener(eventAvg));
 
 
-
-        Query itemsQuery = mEventRef.child(ITEMS);
-        FirebaseRecyclerOptions<Item> ItemOptions = new FirebaseRecyclerOptions.Builder<Item>()
+        Query itemsQuery = mEventRef.collection(ITEMS).orderBy(TIMESTAMP);
+        FirestoreRecyclerOptions<Item> ItemOptions = new FirestoreRecyclerOptions.Builder<Item>()
                 .setQuery(itemsQuery, Item.class)
                 .build();
         mItemAdapter = new ItemAdapter(ItemOptions, this);
         initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event), mItemAdapter);
 
-        Query expensesQuery = mEventRef.child(USERS);
-        FirebaseRecyclerOptions<UserWithExpenses> ExpensesOptions = new FirebaseRecyclerOptions.Builder<UserWithExpenses>()
-                .setQuery(expensesQuery, UserWithExpenses.class)
+        Query expensesQuery = mEventRef.collection(USERS);
+        FirestoreRecyclerOptions<UserInList> ExpensesOptions = new FirestoreRecyclerOptions.Builder<UserInList>()
+                .setQuery(expensesQuery, UserInList.class)
                 .build();
         mExpensesAdapter = new ExpensesAdapter(ExpensesOptions);
         initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event_bottom_sheet), mExpensesAdapter);
@@ -161,9 +201,9 @@ public class EventActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
-        for (String ref: childRef) {
-            mEventRef.child(ref).addValueEventListener(childListeners.get(ref));
-        }
+//        for (User ref: childRef) {
+//            mEventRef.child(ref).addValueEventListener(childListeners.get(ref));
+//        }
 
         mItemAdapter.startListening();
         mExpensesAdapter.startListening();
@@ -173,9 +213,9 @@ public class EventActivity extends AppCompatActivity{
     protected void onPause() {
         super.onPause();
 
-        for (String ref: childRef) {
-            mEventRef.child(ref).removeEventListener(childListeners.get(ref));
-        }
+//        for (User ref: childRef) {
+//            mEventRef.child(ref).removeEventListener(childListeners.get(ref));
+//        }
 
         mItemAdapter.stopListening();
         mExpensesAdapter.stopListening();
@@ -216,10 +256,11 @@ public class EventActivity extends AppCompatActivity{
     }
 
 
-    private class EventActionModeCallback extends SelectableFirebaseRecyclerAdapter.SelectableActionModeCallback
+    private class EventActionModeCallback extends AdvanceFirestoreRecyclerAdapter.SelectableActionModeCallback
     {
-        private SelectableFirebaseRecyclerAdapter adapter;
-        EventActionModeCallback(Context context, SelectableFirebaseRecyclerAdapter adapter, int menu_layout) {
+        private static final String TAG = "EventActionModeCallback";
+        private AdvanceFirestoreRecyclerAdapter adapter;
+        EventActionModeCallback(Context context, AdvanceFirestoreRecyclerAdapter adapter, int menu_layout) {
             super(context, adapter, menu_layout);
             this.adapter = adapter;
         }
@@ -229,22 +270,38 @@ public class EventActivity extends AppCompatActivity{
             switch (item.getItemId()) {
                 case R.id.menu_delete:
                     // TODO: actually remove items
-                    final DatabaseReference items = FirebaseDatabase.getInstance().getReference().child(ITEMS);
+//                    final CollectionReference items = mEventRef.collection(ITEMS);
                     for (int i = adapter.getItemCount() - 1; i >= 0; i--) {
                         if (adapter.isSelected(i)){
-                            adapter.getRef(i).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Log.d("RROI", "delete item " + dataSnapshot.getValue().toString());
-                                    dataSnapshot.getRef().removeValue();
-                                }
+                            String id = ((DocumentReference) adapter.getSnapshots().getSnapshot(i)).getId();
+                            mEventRef.collection(ITEMS).document(id).delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "Item DocumentSnapshot successfully deleted!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error deleting document", e);
+                                        }
+                                    });
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
 
-                                }
-                            });
-                            adapter.getRef(i).setValue(null);
+//                                    getRef(i).addListenerForSingleValueEvent(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(DataSnapshot dataSnapshot) {
+//                                    Log.d("RROI", "delete item " + dataSnapshot.getValue().toString());
+//                                    dataSnapshot.getRef().removeValue();
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(DatabaseError databaseError) {
+//
+//                                }
+//                            });
+//                            adapter.getRef(i).setValue(null);
                         }
                     }
 
@@ -262,7 +319,7 @@ public class EventActivity extends AppCompatActivity{
 //                    itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
 //                        @Override
 //                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            String itemID = (String) dataSnapshot.getValue();
+//                            User itemID = (User) dataSnapshot.getValue();
 //                            Intent editItemIntent = new Intent(ListActivity.this, EditItemActivity.class);
 //                            editItemIntent.putExtra("EXTRA_REF", itemID);
 //                            startActivityForResult(editItemIntent, EDIT_REQUEST);

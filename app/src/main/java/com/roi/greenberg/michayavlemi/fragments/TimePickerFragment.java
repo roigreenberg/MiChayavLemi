@@ -53,8 +53,8 @@ public class TimePickerFragment extends DialogFragment
 
     public void onTimeSet(TimePicker view, int hour, int minuts) {
 
-//        DateText.setText(String.valueOf(day) + "/"
-//                + String.valueOf(month + 1) + "/" + String.valueOf(year));
+//        DateText.setText(User.valueOf(day) + "/"
+//                + User.valueOf(month + 1) + "/" + User.valueOf(year));
         // set selected date into datepicker also
         Log.d("TIMEPICKER", hour + ":" + minuts);
 

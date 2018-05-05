@@ -16,16 +16,19 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.roi.greenberg.michayavlemi.EventActivity;
-import com.roi.greenberg.michayavlemi.MainActivity;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import com.roi.greenberg.michayavlemi.activities.EventActivity;
+import com.roi.greenberg.michayavlemi.activities.MainActivity;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.models.User;
 import com.roi.greenberg.michayavlemi.utils.Utils;
 
 import java.util.ArrayList;
+
+import static com.roi.greenberg.michayavlemi.utils.Constants.*;
 
 /**
  * Created by greenberg on 19/03/2018.
@@ -56,14 +59,16 @@ public class AddNewItemFragment extends DialogFragment {
 
 //        Button mButtonOk = mView.findViewById(R.id.btnOk);
 //        Button mButtonCancel = mView.findViewById(R.id.btnCancel);
-
-        Query userNameQuery = FirebaseDatabase.getInstance().getReference()
-                .child("events")
-                .child(eventActivity.mEventId)
-                .child("users")
-                .orderByChild("details/username");
-
+//TODO
+//        Query userNameQuery = FirebaseDatabase.getInstance().getReference()
+//                .child("events")
+//                .child(eventActivity.mEventId)
+//                .child("users")
+//                .orderByChild("details/username");
+        Query userNameQuery = FirebaseFirestore.getInstance()
+                .collection(USERS).whereEqualTo(EVENTS + "." + eventActivity.mEventId, true);
         allUsers = Utils.getUserNames(userNameQuery);
+
 
         Log.d("ADDITEM", allUsers.toString());
 
@@ -71,6 +76,7 @@ public class AddNewItemFragment extends DialogFragment {
                 R.layout.simple_spinner_dropdown_item, allUsers);
 // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setNotifyOnChange(false);
         mUser.setAdapter(adapter);
 
 
@@ -86,13 +92,18 @@ public class AddNewItemFragment extends DialogFragment {
                     if (!(price_As_string.isEmpty())) {
                         price = Float.valueOf(price_As_string);
                     }
-
-                    FirebaseDatabase.getInstance().getReference()
-                            .child("events")
-                            .child(eventActivity.mEventId)
-                            .child("items")
-                            .push()
-                            .setValue(new Item(name, MainActivity.mUser, user, price, mType.isChecked(), mIsBought.isChecked()));
+                    FirebaseFirestore.getInstance()
+                            .collection(EVENTS)
+                            .document(eventActivity.mEventId)
+                            .collection(ITEMS)
+                            .document()
+                            .set(new Item(name, MainActivity.mUser.getUid(), user.getUid(), price, mType.isChecked(), mIsBought.isChecked()), SetOptions.merge());
+//                    FirebaseDatabase.getInstance().getReference()
+//                            .child("events")
+//                            .child(eventActivity.mEventId)
+//                            .child("items")
+//                            .push()
+//                            .setValue(new Item(name, MainActivity.mUser, user, price, mType.isChecked(), mIsBought.isChecked()));
                 } else {
                     Toast.makeText(eventActivity, "Please enter event name", Toast.LENGTH_SHORT).show();
                 }

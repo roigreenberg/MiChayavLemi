@@ -4,24 +4,24 @@ package com.roi.greenberg.michayavlemi.models;
  * Created by greenberg on 16/03/2018.
  */
 
-public class UserWithExpenses {
-    private User details;
+public class UserInList {
+    private String type;
     private int expenses;
 
-    public UserWithExpenses() {
+    public UserInList() {
     }
 
-    public UserWithExpenses(User details, int expenses) {
-        this.details = details;
+    public UserInList(String type, int expenses) {
+        this.type = type;
         this.expenses = expenses;
     }
 
-    public User getDetails() {
-        return details;
+    public String getType() {
+        return type;
     }
 
-    public void setDetails(User details) {
-        this.details = details;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public int getExpenses() {
@@ -34,6 +34,6 @@ public class UserWithExpenses {
 
 //    @Override
 //    public String toString() {
-//        return getUsername();
+//        return getStringname();
 //    }
 }

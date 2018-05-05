@@ -14,15 +14,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.FirebaseDatabase;
-import com.roi.greenberg.michayavlemi.EventDetails;
-import com.roi.greenberg.michayavlemi.MainActivity;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
+import com.roi.greenberg.michayavlemi.models.EventDetails;
+import com.roi.greenberg.michayavlemi.activities.MainActivity;
 import com.roi.greenberg.michayavlemi.R;
-import com.roi.greenberg.michayavlemi.models.UserWithExpenses;
+import com.roi.greenberg.michayavlemi.models.UserInList;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.roi.greenberg.michayavlemi.utils.Constants.EVENTS;
+import static com.roi.greenberg.michayavlemi.utils.Constants.USERS;
 
 /**
  * Created by greenberg on 19/03/2018.
@@ -43,9 +50,11 @@ public class AddNewEventFragment extends DialogFragment implements
     private int hour;
     private int minutes;
 
+    private static final String TAG = "AddNewEventFragment";
+
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.d("ADDNEWEVENT", "onCreateDialog");
+        Log.d(TAG, "onCreateDialog");
         final MainActivity mainActivity = (MainActivity)getActivity();
         final Fragment fragment = this;
 
@@ -78,7 +87,7 @@ public class AddNewEventFragment extends DialogFragment implements
                 android.support.v4.app.FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
                 DialogFragment DateFragment = new TimePickerFragment();
                 DateFragment.setTargetFragment(fragment, 0);
-                DateFragment.show(fragmentManager, "datePicker");
+                DateFragment.show(fragmentManager, "timePicker");
             }
 
         });
@@ -89,29 +98,58 @@ public class AddNewEventFragment extends DialogFragment implements
             public void onClick(DialogInterface dialogInterface, int id) {
                 String name = mName.getText().toString();
 
+                if (!name.isEmpty()) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(year, month, day, hour, minutes);
 
-                        if (!name.isEmpty()) {
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.set(year, month, day, hour, minutes);
+                    HashMap<String, Object> date = new HashMap<>();
+                    date.put("date", calendar.getTimeInMillis());
+                    String location = mLocation.getText().toString();
 
-                            HashMap<String, Object> date = new HashMap<>();
-                            date.put("date", calendar.getTimeInMillis());
-                            String location = mLocation.getText().toString();
+                    Log.d(TAG, "Add event: " + name);
+//                    User eventKey = FirebaseDatabase.getInstance().getReference().child("events").push().getKey();
 
-                            Toast.makeText(mainActivity,"Add event: " + name, Toast.LENGTH_SHORT).show();
-                            String eventKey = FirebaseDatabase.getInstance().getReference().child("events").push().getKey();
-                            EventDetails eventDetails = new EventDetails(name, date, location); //TODO change date
-                            Map<String, Object> eventDetailsValues = eventDetails.toMap();
+                    EventDetails eventDetails = new EventDetails(name, date, location); //TODO change date
+                    Map<String, Object> eventDetailsValues = eventDetails.toMap();
 
-                            Map<String, Object> childUpdates = new HashMap<>();
+                    Map<String, Object> childUpdates = new HashMap<>();
 
-                            childUpdates.put("/events/" + eventKey + "/details", eventDetailsValues);
-                            childUpdates.put("/events/" + eventKey + "/users/" + MainActivity.mUser.getUid(), new UserWithExpenses(MainActivity.mUser, 0));
-                            FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates);
-                            dialogInterface.dismiss();
-                        } else {
-                            Toast.makeText(mainActivity,"Please enter event name", Toast.LENGTH_SHORT).show();
+//                    childUpdates.put("/events/" + eventKey + "/details", eventDetailsValues);
+//                    childUpdates.put("/events/" + eventKey + "/users/" + MainActivity.mUser.getUid(), new UserInList(MainActivity.mUser, 0));
+//                    FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates);
+
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+//                    childUpdates.put("details", eventDetailsValues);
+//                    childUpdates.put("users/" + MainActivity.mUser.getUid() + "/expenses", 0);
+
+                    // Get a new write batch
+                    WriteBatch batch = db.batch();
+
+                    DocumentReference eventRef = db.collection(EVENTS).document();
+                    batch.set(eventRef, eventDetailsValues);
+
+                    DocumentReference userRef = eventRef.collection(USERS).document(MainActivity.mUser.getUid());
+//                    childUpdates.put("type", "owner");
+//                    childUpdates.put("expenses", 0);
+                    batch.set(userRef, new UserInList("owner", 0));
+
+                    // Commit the batch
+                    batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully written!");
                         }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error writing document", e);
+                        }
+                    });
+
+                    dialogInterface.dismiss();
+                } else {
+                    Toast.makeText(mainActivity,"Please enter event name", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

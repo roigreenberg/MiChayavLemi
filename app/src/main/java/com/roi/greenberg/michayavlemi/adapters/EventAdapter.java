@@ -1,7 +1,6 @@
-package com.roi.greenberg.michayavlemi;
+package com.roi.greenberg.michayavlemi.adapters;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,15 +11,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.roi.greenberg.advancefirestorerecycleradapter.AdvanceFirestoreRecyclerAdapter;
+import com.roi.greenberg.michayavlemi.R;
+import com.roi.greenberg.michayavlemi.activities.EventActivity;
+import com.roi.greenberg.michayavlemi.models.EventDetails;
 
 import java.util.Date;
 
-public class EventAdapter extends SelectableFirebaseRecyclerAdapter<EventDetails, EventAdapter.EventHolder> {
+public class EventAdapter extends AdvanceFirestoreRecyclerAdapter<EventDetails, EventAdapter.EventHolder> {
 
 
-    EventAdapter(FirebaseRecyclerOptions<EventDetails> options, AppCompatActivity activity) {
+    public EventAdapter(FirestoreRecyclerOptions<EventDetails> options, AppCompatActivity activity) {
         super(options, activity);
     }
 
@@ -29,16 +31,18 @@ public class EventAdapter extends SelectableFirebaseRecyclerAdapter<EventDetails
         viewHolder.bindItem(event, isSelected(position));
 
         viewHolder.itemView.setTag(position);
+
     }
 
+    @NonNull
     @Override
-    public EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EventHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.event, parent, false);
         return new EventHolder(view);
     }
 
-    public class EventHolder extends SelectableFirebaseRecyclerAdapter.SelectableHolder{
+    public class EventHolder extends AdvanceFirestoreRecyclerAdapter.SelectableHolder{
 
         TextView mTextViewEventName;
         TextView mTextViewEventDay;
@@ -68,7 +72,7 @@ public class EventAdapter extends SelectableFirebaseRecyclerAdapter<EventDetails
         public void onClick(View v) {
             Log.d("EVENT", "onClick" + v.getTag().toString());
             int position = (int) v.getTag();
-            String key = getRef(position).getKey();
+            String key = getSnapshots().getSnapshot(position).getId();
             Intent eventIntent = new Intent(v.getContext(),EventActivity.class);
             eventIntent.putExtra("EXTRA_REF", key);
             v.getContext().startActivity(eventIntent);

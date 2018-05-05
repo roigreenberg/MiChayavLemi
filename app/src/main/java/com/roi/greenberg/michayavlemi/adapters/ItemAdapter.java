@@ -1,28 +1,24 @@
-package com.roi.greenberg.michayavlemi;
+package com.roi.greenberg.michayavlemi.adapters;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.print.PrinterId;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.roi.greenberg.advancefirestorerecycleradapter.AdvanceFirestoreRecyclerAdapter;
+import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.models.Item;
-import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
+
+import static com.roi.greenberg.michayavlemi.utils.Constants.USERS;
+import static com.roi.greenberg.michayavlemi.utils.Constants.USER_NAME;
 
 //import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
 
@@ -30,7 +26,7 @@ import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRec
  * Created by moti5321 on 13/03/2018.
  */
 
-public class ItemAdapter extends SelectableFirebaseRecyclerAdapter<Item, ItemAdapter.ItemHolder> {
+public class ItemAdapter extends AdvanceFirestoreRecyclerAdapter<Item, ItemAdapter.ItemHolder> {
 
 //private ArrayList<Item> mProducts;
 //final private ItemClickListener mOnClickListener;
@@ -43,7 +39,7 @@ public class ItemAdapter extends SelectableFirebaseRecyclerAdapter<Item, ItemAda
     private Query query;
 
     //Constructor
-    ItemAdapter(FirebaseRecyclerOptions<Item> options, AppCompatActivity activity) {
+    public ItemAdapter(FirestoreRecyclerOptions<Item> options, AppCompatActivity activity) {
         super(options, activity);
     }
 
@@ -57,13 +53,24 @@ public class ItemAdapter extends SelectableFirebaseRecyclerAdapter<Item, ItemAda
 
 
     @Override
-    protected void onBindViewHolder(@NonNull ItemHolder holder, int position, @NonNull Item item) {
+    protected void onBindViewHolder(@NonNull final ItemHolder holder, int position, @NonNull final Item item) {
         super.onBindViewHolder(holder, position, item);
         holder.productName.setText(item.getName());
-        if (item.getUser() != null && item.getBuyerName() != null && !item.getBuyerName().isEmpty())
-            holder.productUser.setText(item.getBuyerName());
-        else
-            holder.productUser.setText("--");
+        holder.productUser.setText("--");
+        if (item.getAssignTo() != null) {
+            FirebaseFirestore.getInstance().collection(USERS).document(item.getAssignTo()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    String name = (String) documentSnapshot.get(USER_NAME);
+                    holder.productUser.setText(name);
+                }
+            });
+        }
+
+//        if (item.getAssignTo() != null && item.getBuyerName() != null && !item.getBuyerName().isEmpty())
+//            holder.productUser.setText(item.getBuyerName());
+//        else
+//            holder.productUser.setText("--");
         if (item.getPrice() != 0)
             holder.productPrice.setText(String.valueOf(item.getPrice()));
         else
@@ -74,7 +81,7 @@ public class ItemAdapter extends SelectableFirebaseRecyclerAdapter<Item, ItemAda
     /**
      * ViewHolder
      */
-    public class ItemHolder extends SelectableFirebaseRecyclerAdapter.SelectableHolder{
+    public class ItemHolder extends AdvanceFirestoreRecyclerAdapter.SelectableHolder{
         TextView productName;
         TextView productUser;
         TextView productPrice;
