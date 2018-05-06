@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.appinvite.FirebaseAppInvite;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -76,14 +77,17 @@ public class MainActivity extends AppCompatActivity{
 //        }
 
         if(mFirestoreDatabase == null) {
-             mFirestoreDatabase = FirebaseFirestore.getInstance();
-
+            mFirestoreDatabase = FirebaseFirestore.getInstance();
+            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+//                    .setTimestampsInSnapshotsEnabled(true)
+                    .setPersistenceEnabled(true)
+                    .build();
+            mFirestoreDatabase.setFirestoreSettings(settings);
         }
 
         mContext = this;
         mFirebaseAuth = FirebaseAuth.getInstance();
 
-        Log.d(TAG, "before auth");
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -106,7 +110,6 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         };
-        Log.d(TAG, "after auth");
     }
 
     @Override
@@ -151,6 +154,7 @@ public class MainActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
 
         FirestoreRecyclerOptions<EventDetails> options = new FirestoreRecyclerOptions.Builder<EventDetails>()
+                .setLifecycleOwner(this)
                 .setQuery(eventQuery, EventDetails.class)
                 .build();
 

@@ -36,6 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.roi.greenberg.advancefirestorerecycleradapter.AdvanceFirestoreRecyclerAdapter;
 import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.adapters.ExpensesAdapter;
@@ -273,7 +274,7 @@ public class EventActivity extends AppCompatActivity{
 //                    final CollectionReference items = mEventRef.collection(ITEMS);
                     for (int i = adapter.getItemCount() - 1; i >= 0; i--) {
                         if (adapter.isSelected(i)){
-                            String id = ((DocumentReference) adapter.getSnapshots().getSnapshot(i)).getId();
+                            String id = ((QueryDocumentSnapshot) adapter.getSnapshots().getSnapshot(i)).getId();
                             mEventRef.collection(ITEMS).document(id).delete()
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
