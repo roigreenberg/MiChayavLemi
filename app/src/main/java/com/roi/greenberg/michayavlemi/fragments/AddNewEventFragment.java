@@ -111,16 +111,14 @@ public class AddNewEventFragment extends DialogFragment implements
 
                     EventDetails eventDetails = new EventDetails(name, date, location); //TODO change date
                     Map<String, Object> eventDetailsValues = eventDetails.toMap();
-
-                    Map<String, Object> childUpdates = new HashMap<>();
+//
+                    Map<String, Object> user = new HashMap<>();
+                    user.put(MainActivity.mUser.getUid(), true);
+                    eventDetailsValues.put("users", user);
 
 //                    childUpdates.put("/events/" + eventKey + "/details", eventDetailsValues);
-//                    childUpdates.put("/events/" + eventKey + "/users/" + MainActivity.mUser.getUid(), new UserInList(MainActivity.mUser, 0));
-//                    FirebaseDatabase.getInstance().getReference().updateChildren(childUpdates);
 
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
-//                    childUpdates.put("details", eventDetailsValues);
-//                    childUpdates.put("users/" + MainActivity.mUser.getUid() + "/expenses", 0);
 
                     // Get a new write batch
                     WriteBatch batch = db.batch();
