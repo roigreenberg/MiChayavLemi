@@ -67,10 +67,6 @@ public class ItemAdapter extends AdvanceFirestoreRecyclerAdapter<Item, ItemAdapt
             });
         }
 
-//        if (item.getAssignTo() != null && item.getBuyerName() != null && !item.getBuyerName().isEmpty())
-//            holder.productUser.setText(item.getBuyerName());
-//        else
-//            holder.productUser.setText("--");
         if (item.getPrice() != 0)
             holder.productPrice.setText(String.valueOf(item.getPrice()));
         else

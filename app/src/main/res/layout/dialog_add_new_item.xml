@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:ems="6"
         android:hint="@string/hint_price"
-        android:inputType="number" />
+        android:inputType="numberDecimal" />
 
     <CheckBox
         android:id="@+id/cb_new_item_isbought"

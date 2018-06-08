@@ -6,12 +6,12 @@ package com.roi.greenberg.michayavlemi.models;
 
 public class UserInList {
     private String type;
-    private int expenses;
+    private double expenses;
 
     public UserInList() {
     }
 
-    public UserInList(String type, int expenses) {
+    public UserInList(String type, double expenses) {
         this.type = type;
         this.expenses = expenses;
     }
@@ -24,11 +24,11 @@ public class UserInList {
         this.type = type;
     }
 
-    public int getExpenses() {
+    public double getExpenses() {
         return expenses;
     }
 
-    public void setExpenses(int expenses) {
+    public void setExpenses(double expenses) {
         this.expenses = expenses;
     }
 

@@ -44,6 +44,7 @@ import com.roi.greenberg.michayavlemi.models.UserInList;
 //import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
 
 import static com.roi.greenberg.michayavlemi.utils.Constants.*;
+import static com.roi.greenberg.michayavlemi.utils.Utils.updateLong;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -278,13 +279,14 @@ public class MainActivity extends AppCompatActivity{
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int whichButton) {
-                            Toast.makeText(MainActivity.this, "Yaay", Toast.LENGTH_SHORT).show();
-//                            mDatabaseReference.child(EVENTS).child(eventId).child(USERS).child(MainActivity.mUser.getUid()).setValue(new UserInList(MainActivity.mUser, 0));
+                                Toast.makeText(MainActivity.this, "Yaay", Toast.LENGTH_SHORT).show();
+    //                            mDatabaseReference.child(EVENTS).child(eventId).child(USERS).child(MainActivity.mUser.getUid()).setValue(new UserInList(MainActivity.mUser, 0));
                                 mFirestoreDatabase.collection(EVENTS).document(eventId).collection(USERS).document(MainActivity.mUser.getUid())
                                         .set(new UserInList("user", 0), SetOptions.merge());
-                            }})
-                        .setNegativeButton(android.R.string.no, null).show();
-                }
+                                updateLong(FirebaseFirestore.getInstance().document(EVENTS + "/" + eventId), "numOfUsers", 1);
+                            }
+                        }).setNegativeButton(android.R.string.no, null).show();
+                   }
                 }
             });
 

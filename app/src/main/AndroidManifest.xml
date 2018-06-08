@@ -3,9 +3,10 @@
     package="com.roi.greenberg.michayavlemi">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -40,9 +41,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
-        <activity android:name=".activities.TransactionsActivity">
-
-        </activity>
+        <activity android:name=".activities.TransactionsActivity"></activity>
+        <activity android:name=".activities.AddNewEventActivity"></activity>
     </application>
 
 </manifest>

@@ -18,17 +18,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -37,6 +31,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.roi.greenberg.advancefirestorerecycleradapter.AdvanceFirestoreRecyclerAdapter;
 import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.adapters.ExpensesAdapter;
@@ -44,8 +39,9 @@ import com.roi.greenberg.michayavlemi.adapters.ItemAdapter;
 import com.roi.greenberg.michayavlemi.fragments.AddNewItemFragment;
 import com.roi.greenberg.michayavlemi.models.EventDetails;
 import com.roi.greenberg.michayavlemi.models.Item;
+import com.roi.greenberg.michayavlemi.models.User;
 import com.roi.greenberg.michayavlemi.models.UserInList;
-import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
+//import com.roi.greenberg.selectablefirebaserecycleradapter.SelectableFirebaseRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,14 +61,19 @@ public class EventActivity extends AppCompatActivity{
     public String mUserId, mUserName;
     public String[] childRef = {"totalexpenses", "average"};
     public HashMap<String, ValueEventListener> childListeners = new HashMap<>();
+    private FloatingActionButton fab;
+    public double mTotal, mAverage;
+    public long numOfUsers;
+    private TextView tvEventTotal;
+    private TextView tvEventAvg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
-        final FloatingActionButton fab = findViewById(R.id.fab_new_item);
-        final TextView eventTotal = findViewById(R.id.rv_event_bottom_sheet_total);
-        final TextView eventAvg = findViewById(R.id.rv_event_bottom_sheet_average);
+        fab = findViewById(R.id.fab_new_item);
+        tvEventTotal = findViewById(R.id.rv_event_bottom_sheet_total);
+        tvEventAvg = findViewById(R.id.rv_event_bottom_sheet_average);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -84,7 +85,7 @@ public class EventActivity extends AppCompatActivity{
             return;
         }
 
-
+        Log.d(TAG, "onCreate: " + mEventId);
 
 //        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
         if(mFirestoreDatabase == null) {
@@ -102,47 +103,14 @@ public class EventActivity extends AppCompatActivity{
 //        mEventRef = mFirebaseDatabase.child(EVENTS).child(mEventId);
         mEventRef = mFirestoreDatabase.collection(EVENTS).document(mEventId);
 
-        mEventRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-                if (documentSnapshot != null && documentSnapshot.exists()) {
-                    Log.d(TAG, "Current data: " + documentSnapshot.getData());
-                    EventDetails eventDetails = documentSnapshot.toObject(EventDetails.class);
-                    if (eventDetails == null) {
-                        return;
-                    }
-                    mEventName = eventDetails.getName();
-                    try {
-                        long total = (long) documentSnapshot.getData().get("totalexpenses");
-                        eventTotal.setText(String.valueOf(total));
-                    } catch (NullPointerException ex) {
-                        Log.d(TAG, ex + "no total expenses");
-                    }
-
-                    try {
-                        long avg = (long) documentSnapshot.getData().get("average");
-                        eventAvg.setText(String.valueOf(avg));
-                    } catch (NullPointerException ex) {
-                        Log.d(TAG, ex + "no average");
-                    }
-
-                }
-
-
-            }
-        });
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
                 DialogFragment DateFragment = new AddNewItemFragment();
-                DateFragment.show(fragmentManager, "addNewItem");      }
+                DateFragment.show(fragmentManager, "addNewItem");
+            }
         });
 
         View llBottomSheet = findViewById(R.id.content_event_bottom_sheet);
@@ -162,15 +130,52 @@ public class EventActivity extends AppCompatActivity{
             }
         });
 
-//        childListeners.put("totalexpenses", addLongListener(eventTotal));
+//        childListeners.put("totalexpenses", addLongListener(tvEventTotal));
 //
-//        childListeners.put("average", addLongListener(eventAvg));
+//        childListeners.put("average", addLongListener(tvEventAvg));
 
 
 
-        Query itemsQuery = mEventRef.collection(ITEMS).orderBy(TIMESTAMP);
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
+        mEventRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                Log.d(TAG, "onEvent");
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    Log.d(TAG, "Current data: " + documentSnapshot.getData());
+                    EventDetails eventDetails = documentSnapshot.toObject(EventDetails.class);
+                    if (eventDetails == null) {
+                        return;
+                    }
+                    mEventName = eventDetails.getName();
+                    numOfUsers = eventDetails.getNumOfUsers();
+                    mTotal = eventDetails.getTotalexpenses();
+                    mAverage = eventDetails.getAverage();
+                    tvEventTotal.setText(String.valueOf(mTotal));
+                    tvEventAvg.setText(String.valueOf(mAverage));
+
+                }
+            }
+        });
+
+        Query itemsQuery = mEventRef.collection(ITEMS)
+                .orderBy("type", Query.Direction.DESCENDING)
+                .orderBy(TIMESTAMP, Query.Direction.ASCENDING);
         FirestoreRecyclerOptions<Item> ItemOptions = new FirestoreRecyclerOptions.Builder<Item>()
                 .setQuery(itemsQuery, Item.class)
+                .setLifecycleOwner(this)
                 .build();
         mItemAdapter = new ItemAdapter(ItemOptions, this);
         initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event), mItemAdapter);
@@ -178,6 +183,7 @@ public class EventActivity extends AppCompatActivity{
         Query expensesQuery = mEventRef.collection(USERS);
         FirestoreRecyclerOptions<UserInList> ExpensesOptions = new FirestoreRecyclerOptions.Builder<UserInList>()
                 .setQuery(expensesQuery, UserInList.class)
+                .setLifecycleOwner(this)
                 .build();
         mExpensesAdapter = new ExpensesAdapter(ExpensesOptions);
         initRecycleView(this, (RecyclerView) findViewById(R.id.rv_event_bottom_sheet), mExpensesAdapter);
@@ -198,33 +204,33 @@ public class EventActivity extends AppCompatActivity{
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-//        for (User ref: childRef) {
-//            mEventRef.child(ref).addValueEventListener(childListeners.get(ref));
-//        }
-
-        mItemAdapter.startListening();
-        mExpensesAdapter.startListening();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-//        for (User ref: childRef) {
-//            mEventRef.child(ref).removeEventListener(childListeners.get(ref));
-//        }
-
-        mItemAdapter.stopListening();
-        mExpensesAdapter.stopListening();
-
-
-
-
-    }
+    //    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+////        for (User ref: childRef) {
+////            mEventRef.child(ref).addValueEventListener(childListeners.get(ref));
+////        }
+//
+//        mItemAdapter.startListening();
+//        mExpensesAdapter.startListening();
+//    }
+//
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//
+////        for (User ref: childRef) {
+////            mEventRef.child(ref).removeEventListener(childListeners.get(ref));
+////        }
+//
+//        mItemAdapter.stopListening();
+//        mExpensesAdapter.stopListening();
+//
+//
+//
+//
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -270,67 +276,70 @@ public class EventActivity extends AppCompatActivity{
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.menu_delete:
-                    // TODO: actually remove items
-//                    final CollectionReference items = mEventRef.collection(ITEMS);
+                    // Get a new write batch
+                    WriteBatch batch = mFirestoreDatabase.batch();
+                    double price = 0;
                     for (int i = adapter.getItemCount() - 1; i >= 0; i--) {
                         if (adapter.isSelected(i)){
-                            String id = ((QueryDocumentSnapshot) adapter.getSnapshots().getSnapshot(i)).getId();
-                            mEventRef.collection(ITEMS).document(id).delete()
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.d(TAG, "Item DocumentSnapshot successfully deleted!");
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(TAG, "Error deleting document", e);
-                                        }
-                                    });
-
-
-//                                    getRef(i).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(DataSnapshot dataSnapshot) {
-//                                    Log.d("RROI", "delete item " + dataSnapshot.getValue().toString());
-//                                    dataSnapshot.getRef().removeValue();
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(DatabaseError databaseError) {
-//
-//                                }
-//                            });
-//                            adapter.getRef(i).setValue(null);
+                            final QueryDocumentSnapshot doc = (QueryDocumentSnapshot) adapter.getSnapshots().getSnapshot(i);
+                            String id = doc.getId();
+                            batch.delete(mEventRef.collection(ITEMS).document(id));
+                            price += doc.contains("price") ? doc.getDouble("price") : 0;
                         }
                     }
+                    // Commit the batch
+                    batch.commit().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "Delete success");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Delete failure.", e);
+                        }
+                    });
+                    if (price > 0) {
+                        FirebaseFirestore.getInstance().document(EVENTS + '/' + mEventId).update(TOTAL_EXTENSES, mTotal - price).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error updating document", e);
+                            }
+                        });
+                        FirebaseFirestore.getInstance().document(EVENTS + '/' + mEventId).update(AVERAGE, mAverage - (price / numOfUsers)).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error updating document", e);
+                            }
+                        });
+                    }
+
 
                     break;
                 case R.id.menu_users_picker:
-//                    showAssigningDialog(mode);
+    //                    showAssigningDialog(mode);
                     break;
 
                 case R.id.menu_edit_item:
-//                    int pos;
-//                    final DatabaseReference itemRef;
-//
-//                    pos = (int) adapter.getSelectedItems().get(0);
-//                    itemRef = adapter.getRef(pos).child("itemID");
-//                    itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            User itemID = (User) dataSnapshot.getValue();
-//                            Intent editItemIntent = new Intent(ListActivity.this, EditItemActivity.class);
-//                            editItemIntent.putExtra("EXTRA_REF", itemID);
-//                            startActivityForResult(editItemIntent, EDIT_REQUEST);
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(DatabaseError databaseError) {
-//
-//                        }
-//                  });
+    //                    int pos;
+    //                    final DatabaseReference itemRef;
+    //
+    //                    pos = (int) adapter.getSelectedItems().get(0);
+    //                    itemRef = adapter.getRef(pos).child("itemID");
+    //                    itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    //                        @Override
+    //                        public void onDataChange(DataSnapshot dataSnapshot) {
+    //                            User itemID = (User) dataSnapshot.getValue();
+    //                            Intent editItemIntent = new Intent(ListActivity.this, EditItemActivity.class);
+    //                            editItemIntent.putExtra("EXTRA_REF", itemID);
+    //                            startActivityForResult(editItemIntent, EDIT_REQUEST);
+    //                        }
+    //
+    //                        @Override
+    //                        public void onCancelled(DatabaseError databaseError) {
+    //
+    //                        }
+    //                  });
                     break;
 
                 default:

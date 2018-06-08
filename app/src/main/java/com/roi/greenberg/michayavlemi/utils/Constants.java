@@ -15,5 +15,9 @@ public class Constants {
     public static final String DETAILS = "details";
     public static final String TIMESTAMP = "timestamp";
     public static final String TRANSACTIONS = "require_transactions";
+    public static final String EXPENSES = "expenses";
+    public static final String TOTAL_EXTENSES = "totalexpenses";
+    public static final String AVERAGE = "average";
+
 
 }

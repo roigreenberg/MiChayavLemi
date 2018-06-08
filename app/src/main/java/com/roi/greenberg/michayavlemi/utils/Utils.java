@@ -10,10 +10,17 @@ import android.util.Log;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.roi.greenberg.michayavlemi.models.User;
 
 import java.io.UnsupportedEncodingException;
@@ -103,4 +110,30 @@ public class Utils {
         return allUsers;
     }
 
+    public static void updateLong(final DocumentReference ref, final String field, final long amount) {
+        final String TAG = "updateLong";
+        FirebaseFirestore.getInstance().runTransaction(new Transaction.Function<Long>() {
+            @Override
+            public Long apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                DocumentSnapshot snapshot = transaction.get(ref);
+
+                long newValue = amount + (snapshot.getLong(field) != null ? snapshot.getLong(field) : 0);
+
+                transaction.update(ref, field, newValue);
+
+                return newValue;
+            }
+
+        }).addOnSuccessListener(new OnSuccessListener<Long>() {
+            @Override
+            public void onSuccess(Long result) {
+                Log.d(TAG, "Transaction success: " + result);
+            }
+        }) .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "Transaction failure.", e);
+            }
+        });
+    }
 }

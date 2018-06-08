@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -42,6 +43,8 @@ public class AddNewItemFragment extends DialogFragment {
     private CheckBox mIsBought;
     private Switch mType;
     private ArrayList<User> allUsers;
+
+    private static final String TAG = "AddNewItemFragment";
 
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -98,12 +101,20 @@ public class AddNewItemFragment extends DialogFragment {
                             .collection(ITEMS)
                             .document()
                             .set(new Item(name, MainActivity.mUser.getUid(), user.getUid(), price, mType.isChecked(), mIsBought.isChecked()), SetOptions.merge());
-//                    FirebaseDatabase.getInstance().getReference()
-//                            .child("events")
-//                            .child(eventActivity.mEventId)
-//                            .child("items")
-//                            .push()
-//                            .setValue(new Item(name, MainActivity.mUser, user, price, mType.isChecked(), mIsBought.isChecked()));
+                    if (price > 0) {
+                        FirebaseFirestore.getInstance().document(EVENTS + '/' + eventActivity.mEventId).update(TOTAL_EXTENSES, eventActivity.mTotal + price).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error updating document", e);
+                            }
+                        });
+                        FirebaseFirestore.getInstance().document(EVENTS + '/' + eventActivity.mEventId).update(AVERAGE, eventActivity.mAverage + (price / eventActivity.numOfUsers)).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error updating document", e);
+                            }
+                        });
+                    }
                 } else {
                     Toast.makeText(eventActivity, "Please enter event name", Toast.LENGTH_SHORT).show();
                 }

@@ -109,7 +109,7 @@ public class AddNewEventFragment extends DialogFragment implements
                     Log.d(TAG, "Add event: " + name);
 //                    User eventKey = FirebaseDatabase.getInstance().getReference().child("events").push().getKey();
 
-                    EventDetails eventDetails = new EventDetails(name, date, location); //TODO change date
+                    EventDetails eventDetails = new EventDetails(name, date, location, 1); //TODO change date
                     Map<String, Object> eventDetailsValues = eventDetails.toMap();
 //
                     Map<String, Object> user = new HashMap<>();
