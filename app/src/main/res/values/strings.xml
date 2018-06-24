@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">MiChayavLemi</string>
     <string name="title_activity_list_events">ListEvents</string>
     <string name="title_activity_main2">Main2Activity</string>
@@ -26,4 +26,6 @@
     <string name="new_item_isbought">Bought?</string>
     <string name="TIMESTAMP">timestamp</string>
     <string name="Unknown_user">Unknown</string>
+    <string name="appbar_scrolling_view_behavior" tools:override="true" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="bottom_sheet_behavior" translatable="false">com.google.android.material.bottomsheet.BottomSheetBehavior</string>
 </resources>

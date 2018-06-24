@@ -5,8 +5,8 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import android.util.Log;
 import android.widget.TimePicker;
 

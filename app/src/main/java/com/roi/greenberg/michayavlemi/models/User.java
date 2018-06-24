@@ -1,7 +1,7 @@
 package com.roi.greenberg.michayavlemi.models;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by greenberg on 16/03/2018.

@@ -2,11 +2,13 @@ package com.roi.greenberg.michayavlemi.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
+import androidx.fragment.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,7 +74,7 @@ public class AddNewEventFragment extends DialogFragment implements
 
             @Override
             public void onClick(View v) {
-                android.support.v4.app.FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
+                FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
                 DialogFragment DateFragment = new DatePickerFragment();
                 DateFragment.setTargetFragment(fragment, 0);
                 DateFragment.show(fragmentManager, "datePicker");
@@ -84,7 +86,7 @@ public class AddNewEventFragment extends DialogFragment implements
 
             @Override
             public void onClick(View v) {
-                android.support.v4.app.FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
+                FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
                 DialogFragment DateFragment = new TimePickerFragment();
                 DateFragment.setTargetFragment(fragment, 0);
                 DateFragment.show(fragmentManager, "timePicker");

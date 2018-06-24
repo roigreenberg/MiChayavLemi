@@ -1,15 +1,17 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: "androidx.navigation.safeargs"
+
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.roi.greenberg.michayavlemi"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 12
         versionName "0.1.2"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -22,20 +24,20 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
 
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support:cardview-v7:27.1.1'
-    implementation 'com.android.support:customtabs:27.1.1'
-    implementation 'com.android.support:recyclerview-v7:27.1.1'
-    implementation 'com.android.support:mediarouter-v7:27.1.1'
+    implementation 'androidx.appcompat:appcompat:1.0.0-alpha3'
+//    implementation 'com.google.android.material:material:1.0.0-alpha3'
+    implementation 'androidx.cardview:cardview:1.0.0-alpha3'
+    implementation 'androidx.browser:browser:1.0.0-alpha3'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0-alpha3'
+    implementation 'androidx.mediarouter:mediarouter:1.0.0-alpha3'
 
-    implementation 'com.facebook.android:facebook-android-sdk:4.31.0'
+    implementation 'com.facebook.android:facebook-android-sdk:4.33.0'
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha3'
 
     implementation 'com.google.android.gms:play-services-base:15.0.1'
 
@@ -44,18 +46,26 @@ dependencies {
     //    implementation 'com.android.support:animated-vector-drawable:26.1.0'
 //    implementation project(':selectablefirebaserecycleradapter')
 //    implementation 'com.github.roigreenberg:SelectableFirebaseAdapter:master-SNAPSHOT'
-    implementation 'com.github.roigreenberg:AdvanceFirestoreAdapter:master-SNAPSHOT'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.3'
+    implementation 'com.github.roigreenberg:AdvanceFirestoreAdapter:androidx-SNAPSHOT'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.9.4'
 
-    implementation 'com.google.firebase:firebase-invites:16.0.0'
-    implementation 'com.google.firebase:firebase-core:16.0.0'
+    implementation 'com.google.firebase:firebase-invites:16.0.1'
+    implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-database:16.0.1'
-    implementation 'com.google.firebase:firebase-auth:16.0.1'
-    implementation 'com.google.firebase:firebase-firestore:17.0.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.2'
+    implementation 'com.google.firebase:firebase-firestore:17.0.2'
 
     implementation 'com.firebaseui:firebase-ui-auth:4.0.1'
     implementation 'com.firebaseui:firebase-ui-database:4.0.1'
     implementation 'com.firebaseui:firebase-ui-firestore:4.0.1'
+
+    def nav_version = "1.0.0-alpha02"
+
+    implementation "android.arch.navigation:navigation-fragment:$nav_version" // use -ktx for Kotlin
+    implementation "android.arch.navigation:navigation-ui:$nav_version" // use -ktx for Kotlin
+
+    // optional - Test helpers
+    androidTestImplementation "android.arch.navigation:navigation-testing:$nav_version" // use -ktx for Kotlin
 
 }
 
