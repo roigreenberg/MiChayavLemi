@@ -1,7 +1,6 @@
 package com.roi.greenberg.michayavlemi.adapters;
 
 
-import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.Navigation;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.roi.greenberg.advancefirestorerecycleradapter.AdvanceFirestoreRecyclerAdapter;
 import com.roi.greenberg.michayavlemi.R;
-import com.roi.greenberg.michayavlemi.activities.EventActivity;
 import com.roi.greenberg.michayavlemi.models.EventDetails;
 
 import java.util.Date;
@@ -76,9 +74,6 @@ public class EventAdapter extends AdvanceFirestoreRecyclerAdapter<EventDetails, 
             Log.d("EVENT", "onClick" + v.getTag().toString());
             int position = (int) v.getTag();
             String key = getSnapshots().getSnapshot(position).getId();
-//            Intent eventIntent = new Intent(v.getContext(),EventActivity.class);
-//            eventIntent.putExtra("EXTRA_REF", key);
-//            v.getContext().startActivity(eventIntent);
 
             Bundle bundle = new Bundle();
             bundle.putString("id", key);

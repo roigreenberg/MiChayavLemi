@@ -26,13 +26,6 @@ import static com.roi.greenberg.michayavlemi.utils.Constants.*;
 
 public class TransactionsAdapter extends FirestoreRecyclerAdapter<Transaction, TransactionsAdapter.TransactionHolder> {
 
-//private ArrayList<Item> mProducts;
-//final private ItemClickListener mOnClickListener;
-
-//Interface ClickListener
-//public interface ItemClickListener {
-//    void onListItemClick(int clickItemIndex);
-//}*
 
     //Constructor
     public TransactionsAdapter(FirestoreRecyclerOptions<Transaction> options) {

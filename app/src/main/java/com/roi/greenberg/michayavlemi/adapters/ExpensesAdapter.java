@@ -25,14 +25,6 @@ import static com.roi.greenberg.michayavlemi.utils.Constants.USERS;
 
 public class ExpensesAdapter extends FirestoreRecyclerAdapter<UserInList, ExpensesAdapter.ExpensesHolder> {
 
-//private ArrayList<Item> mProducts;
-//final private ItemClickListener mOnClickListener;
-
-//Interface ClickListener
-//public interface ItemClickListener {
-//    void onListItemClick(int clickItemIndex);
-//}
-
     //Constructor
     public ExpensesAdapter(FirestoreRecyclerOptions<UserInList> options) {
         super(options);

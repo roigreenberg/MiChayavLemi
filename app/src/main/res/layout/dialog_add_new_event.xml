@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="6"
-        android:hint="Type Event name"
+        android:hint="@string/type_event_name"
         android:inputType="text" />
 
     <LinearLayout
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
 
             android:ems="6"
-            android:hint="Date"/>
+            android:hint="@string/date"/>
 
         <TextView
             android:id="@+id/tvTime"
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
 
             android:ems="6"
-            android:hint="Time"/>
+            android:hint="@string/time"/>
 
     </LinearLayout>
 
@@ -54,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="6"
-        android:hint="Location Event"
+        android:hint="@string/location_event"
         android:inputType="text" />
 
     <!--<RelativeLayout-->

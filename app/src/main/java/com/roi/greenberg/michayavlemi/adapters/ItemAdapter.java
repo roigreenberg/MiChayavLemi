@@ -28,13 +28,6 @@ import static com.roi.greenberg.michayavlemi.utils.Constants.USER_NAME;
 
 public class ItemAdapter extends AdvanceFirestoreRecyclerAdapter<Item, ItemAdapter.ItemHolder> {
 
-//private ArrayList<Item> mProducts;
-//final private ItemClickListener mOnClickListener;
-
-//Interface ClickListener
-//public interface ItemClickListener {
-//    void onListItemClick(int clickItemIndex);
-//}
 
     private Query query;
 

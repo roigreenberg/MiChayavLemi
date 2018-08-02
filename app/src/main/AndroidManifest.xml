@@ -36,13 +36,6 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.EventActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MainActivity" />
-        </activity>
-        <activity android:name=".activities.TransactionsActivity"></activity>
-        <activity android:name=".activities.AddNewEventActivity"></activity>
     </application>
 
 </manifest>

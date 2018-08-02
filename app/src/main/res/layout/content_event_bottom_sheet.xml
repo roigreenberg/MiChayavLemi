@@ -11,7 +11,7 @@
     app:behavior_peekHeight="@dimen/bottom_sheet_peekHeight"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     android:background="@android:color/white"
-    tools:context="com.roi.greenberg.michayavlemi.activities.EventActivity"
+    tools:context="com.roi.greenberg.michayavlemi.activities.MainActivity"
     tools:showIn="@layout/fragment_event">
 
     <RelativeLayout
@@ -51,7 +51,7 @@
                 android:id="@+id/rv_event_bottom_sheet_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
+                android:text="@string/_0"
                 android:textColor="#000000"
                 android:textSize="20sp" />
 
@@ -88,7 +88,7 @@
                 android:id="@+id/rv_event_bottom_sheet_average"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
+                android:text="@string/_0"
                 android:textColor="#000000"
                 android:textSize="20sp" />
 

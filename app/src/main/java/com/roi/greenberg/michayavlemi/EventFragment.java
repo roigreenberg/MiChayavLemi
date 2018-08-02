@@ -1,7 +1,6 @@
 package com.roi.greenberg.michayavlemi;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -39,9 +38,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.roi.greenberg.advancefirestorerecycleradapter.AdvanceFirestoreRecyclerAdapter;
-import com.roi.greenberg.michayavlemi.activities.EventActivity;
 import com.roi.greenberg.michayavlemi.activities.MainActivity;
-import com.roi.greenberg.michayavlemi.activities.TransactionsActivity;
 import com.roi.greenberg.michayavlemi.adapters.ExpensesAdapter;
 import com.roi.greenberg.michayavlemi.adapters.ItemAdapter;
 import com.roi.greenberg.michayavlemi.fragments.AddNewItemFragment;
@@ -130,13 +127,6 @@ public class EventFragment extends Fragment {
 
         eventHandler = EventHandler.getInstance();
         eventHandler.setEventId(eventId);
-
-//        childListeners.put("totalexpenses", addLongListener(tvEventTotal));
-//
-//        childListeners.put("average", addLongListener(tvEventAvg));
-
-
-
 
 
     }
@@ -272,12 +262,6 @@ public class EventFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override

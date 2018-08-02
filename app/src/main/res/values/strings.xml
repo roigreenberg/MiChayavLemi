@@ -28,4 +28,16 @@
     <string name="Unknown_user">Unknown</string>
     <string name="appbar_scrolling_view_behavior_copy" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
     <string name="bottom_sheet_behavior" translatable="false">com.google.android.material.bottomsheet.BottomSheetBehavior</string>
+    <string name="type_event_name">Type Event name</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="location_event">Location Event</string>
+    <string name="_0">0</string>
+    <string name="event">Event</string>
+    <string name="day">Day</string>
+    <string name="location">Location</string>
+    <string name="name">Name</string>
+    <string name="expenses">expenses</string>
+    <string name="user">User</string>
+    <string name="right_arrow"><![CDATA[->]]></string>
 </resources>

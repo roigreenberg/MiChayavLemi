@@ -22,8 +22,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.roi.greenberg.michayavlemi.MainFragment;
-import com.roi.greenberg.michayavlemi.activities.EventActivity;
-import com.roi.greenberg.michayavlemi.activities.MainActivity;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.models.User;
@@ -77,7 +75,6 @@ public class AddNewItemFragment extends DialogFragment {
 
         ArrayAdapter<User> adapter = new ArrayAdapter<>(context,
                 R.layout.simple_spinner_dropdown_item, allUsers);
-// Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adapter.setNotifyOnChange(false);
         mUser.setAdapter(adapter);

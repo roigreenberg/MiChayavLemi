@@ -68,8 +68,6 @@ public class AddNewEventFragment extends DialogFragment implements
         mDate = mView.findViewById(R.id.tvDate);
         mTime = mView.findViewById(R.id.tvTime);
         mLocation = mView.findViewById(R.id.etLocation);
-//        Button mButtonOk = mView.findViewById(R.id.btnOk);
-//        Button mButtonCancel = mView.findViewById(R.id.btnCancel);
 
         mDate.setOnClickListener( new View.OnClickListener() {
 
@@ -110,7 +108,6 @@ public class AddNewEventFragment extends DialogFragment implements
                     String location = mLocation.getText().toString();
 
                     Log.d(TAG, "Add event: " + name);
-//                    User eventKey = FirebaseDatabase.getInstance().getReference().child("events").push().getKey();
 
                     EventDetails eventDetails = new EventDetails(name, date, location, 1); //TODO change date
                     Map<String, Object> eventDetailsValues = eventDetails.toMap();
@@ -119,7 +116,6 @@ public class AddNewEventFragment extends DialogFragment implements
                     user.put(MainFragment.mUser.getUid(), true);
                     eventDetailsValues.put("users", user);
 
-//                    childUpdates.put("/events/" + eventKey + "/details", eventDetailsValues);
 
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -130,8 +126,6 @@ public class AddNewEventFragment extends DialogFragment implements
                     batch.set(eventRef, eventDetailsValues);
 
                     DocumentReference userRef = eventRef.collection(USERS).document(MainFragment.mUser.getUid());
-//                    childUpdates.put("type", "owner");
-//                    childUpdates.put("expenses", 0);
                     batch.set(userRef, new UserInList("owner", 0));
 
                     // Commit the batch
