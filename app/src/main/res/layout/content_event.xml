@@ -6,9 +6,9 @@
     android:background="@color/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior_copy"
     tools:context="com.roi.greenberg.michayavlemi.activities.EventActivity"
-    tools:showIn="@layout/activity_event">
+    tools:showIn="@layout/fragment_event">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_event"

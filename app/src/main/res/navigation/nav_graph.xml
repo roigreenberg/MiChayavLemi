@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/mainFragment">
+    <!--<activity-->
+        <!--android:id="@+id/mainActivity"-->
+        <!--android:name="com.roi.greenberg.michayavlemi.activities.MainActivity"-->
+        <!--android:label="activity_main"-->
+        <!--tools:layout="@layout/activity_main" />-->
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.roi.greenberg.michayavlemi.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_eventFragment"
+            app:destination="@id/eventFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/eventFragment"
+        android:name="com.roi.greenberg.michayavlemi.EventFragment"
+        android:label="fragment_event"
+        tools:layout="@layout/fragment_event" >
+        <argument
+            android:name="key"
+            android:defaultValue='""'
+            app:type="string" />
+        <action
+            android:id="@+id/action_eventFragment_to_requireTransactionsFragment"
+            app:destination="@id/requireTransactionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/requireTransactionsFragment"
+        android:name="com.roi.greenberg.michayavlemi.RequireTransactionsFragment"
+        android:label="fragment_require_transactions"
+        tools:layout="@layout/fragment_require_transactions" />
+</navigation>

@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
+import com.roi.greenberg.michayavlemi.MainFragment;
 import com.roi.greenberg.michayavlemi.models.EventDetails;
 import com.roi.greenberg.michayavlemi.activities.MainActivity;
 import com.roi.greenberg.michayavlemi.R;
@@ -115,7 +116,7 @@ public class AddNewEventFragment extends DialogFragment implements
                     Map<String, Object> eventDetailsValues = eventDetails.toMap();
 //
                     Map<String, Object> user = new HashMap<>();
-                    user.put(MainActivity.mUser.getUid(), true);
+                    user.put(MainFragment.mUser.getUid(), true);
                     eventDetailsValues.put("users", user);
 
 //                    childUpdates.put("/events/" + eventKey + "/details", eventDetailsValues);
@@ -128,7 +129,7 @@ public class AddNewEventFragment extends DialogFragment implements
                     DocumentReference eventRef = db.collection(EVENTS).document();
                     batch.set(eventRef, eventDetailsValues);
 
-                    DocumentReference userRef = eventRef.collection(USERS).document(MainActivity.mUser.getUid());
+                    DocumentReference userRef = eventRef.collection(USERS).document(MainFragment.mUser.getUid());
 //                    childUpdates.put("type", "owner");
 //                    childUpdates.put("expenses", 0);
                     batch.set(userRef, new UserInList("owner", 0));
