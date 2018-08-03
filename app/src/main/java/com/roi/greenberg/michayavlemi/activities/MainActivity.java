@@ -17,7 +17,6 @@ import com.roi.greenberg.michayavlemi.R;
 
 public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
-    private static final String ANONYMOUS = "anonymous";
     private static final String TAG = "MainActivity";
 
     @Override

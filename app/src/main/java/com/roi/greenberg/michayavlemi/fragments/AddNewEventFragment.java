@@ -1,5 +1,6 @@
 package com.roi.greenberg.michayavlemi.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import androidx.fragment.app.DialogFragment;
@@ -21,11 +22,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
-import com.roi.greenberg.michayavlemi.MainFragment;
 import com.roi.greenberg.michayavlemi.models.EventDetails;
 import com.roi.greenberg.michayavlemi.activities.MainActivity;
 import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.models.UserInList;
+import com.roi.greenberg.michayavlemi.utils.UserHandler;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -49,7 +50,6 @@ public class AddNewEventFragment extends DialogFragment implements
     private int year;
     private int month;
     private int day;
-    private int dayOfWeek;
     private int hour;
     private int minutes;
 
@@ -60,9 +60,9 @@ public class AddNewEventFragment extends DialogFragment implements
         Log.d(TAG, "onCreateDialog");
         final MainActivity mainActivity = (MainActivity)getActivity();
         final Fragment fragment = this;
-
+        final UserHandler userHandler = UserHandler.getInstance();
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(mainActivity);
-        View mView = LayoutInflater.from(mainActivity).inflate(R.layout.dialog_add_new_event, null);
+        @SuppressLint("InflateParams") View mView = LayoutInflater.from(mainActivity).inflate(R.layout.dialog_add_new_event, null);
         mBuilder.setView(mView);
         mName =  mView.findViewById(R.id.etEventName);
         mDate = mView.findViewById(R.id.tvDate);
@@ -109,11 +109,11 @@ public class AddNewEventFragment extends DialogFragment implements
 
                     Log.d(TAG, "Add event: " + name);
 
-                    EventDetails eventDetails = new EventDetails(name, date, location, 1); //TODO change date
+                    EventDetails eventDetails = new EventDetails(name, date, location, 1);
                     Map<String, Object> eventDetailsValues = eventDetails.toMap();
 //
                     Map<String, Object> user = new HashMap<>();
-                    user.put(MainFragment.mUser.getUid(), true);
+                    user.put(userHandler.getUser().getUid(), true);
                     eventDetailsValues.put("users", user);
 
 
@@ -125,7 +125,7 @@ public class AddNewEventFragment extends DialogFragment implements
                     DocumentReference eventRef = db.collection(EVENTS).document();
                     batch.set(eventRef, eventDetailsValues);
 
-                    DocumentReference userRef = eventRef.collection(USERS).document(MainFragment.mUser.getUid());
+                    DocumentReference userRef = eventRef.collection(USERS).document(userHandler.getUser().getUid());
                     batch.set(userRef, new UserInList("owner", 0));
 
                     // Commit the batch
@@ -156,13 +156,12 @@ public class AddNewEventFragment extends DialogFragment implements
     }
 
     @Override
-    public void onFinishDateDialog(int year, int month, int day, int dayOfWeek) {
+    public void onFinishDateDialog(int year, int month, int day) {
         this.year = year;
         this.month = month;
         this.day = day;
         String date = day + "/" + month + "/" + year;
         mDate.setText(date);
-        this.dayOfWeek = dayOfWeek;
     }
 
     @Override

@@ -65,10 +65,10 @@ public class ExpensesAdapter extends FirestoreRecyclerAdapter<UserInList, Expens
      * ViewHolder
      */
     public class ExpensesHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView userName;
-        TextView userExpenses;
+        final TextView userName;
+        final TextView userExpenses;
 
-        public ExpensesHolder(View view) {
+        ExpensesHolder(View view) {
             super(view);
             userName = view.findViewById(R.id.tv_user_name);
             userExpenses = view.findViewById(R.id.tv_user_expenses);

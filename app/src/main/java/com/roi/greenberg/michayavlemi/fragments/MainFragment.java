@@ -1,4 +1,4 @@
-package com.roi.greenberg.michayavlemi;
+package com.roi.greenberg.michayavlemi.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,12 +33,13 @@ import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
+import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.activities.MainActivity;
 import com.roi.greenberg.michayavlemi.adapters.EventAdapter;
-import com.roi.greenberg.michayavlemi.fragments.AddNewEventFragment;
 import com.roi.greenberg.michayavlemi.models.EventDetails;
 import com.roi.greenberg.michayavlemi.models.User;
 import com.roi.greenberg.michayavlemi.models.UserInList;
+import com.roi.greenberg.michayavlemi.utils.UserHandler;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,32 +57,28 @@ import static com.roi.greenberg.michayavlemi.utils.Utils.updateLong;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainFragment.OnFragmentInteractionListener} interface
+ * {link MainFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link MainFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class MainFragment extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
+//    private OnFragmentInteractionListener mListener;
 
     private static final int RC_SIGN_IN = 1;
     private static final String TAG = "MainFragment";
     private static final String ANONYMOUS = "anonymous";
 
-    private RecyclerView mRecyclerView;
-    private List<EventDetails> mEventDetails;
     private EventAdapter mEventAdapter;
 
+    private UserHandler userHandler;
 
+    private FirebaseFirestore mFirestoreDatabase;
 
-    public FirebaseFirestore mFirestoreDatabase;
-
-    private Context mContext;
+//    private Context mContext;
     private static FirebaseAuth mFirebaseAuth;
     private static FirebaseAuth.AuthStateListener mAuthStateListener;
-
-    public static User mUser;
 
 
     public MainFragment() {
@@ -92,11 +89,9 @@ public class MainFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment MainFragment.
      */
-    public static MainFragment newInstance(String param1, String param2) {
+    private static MainFragment newInstance() {
         return new MainFragment();
     }
 
@@ -164,7 +159,10 @@ public class MainFragment extends Fragment {
         Uri photoUrl = user.getPhotoUrl();
         String userUid = user.getUid();
         Log.d(TAG, userName + " " + email + " " + photoUrl + " " + userUid);
-        mUser = new User(userName, email, photoUrl, userUid);
+        User mUser = new User(userName, email, photoUrl, userUid);
+
+        userHandler = UserHandler.getInstance();
+        userHandler.setUser(mUser);
 
         mFirestoreDatabase.collection(USERS).document(userUid).set(mUser, SetOptions.merge());
         FloatingActionButton fab = getView().findViewById(R.id.fab_new_event);
@@ -173,7 +171,7 @@ public class MainFragment extends Fragment {
         Query eventQuery = mFirestoreDatabase.collection(EVENTS).whereEqualTo(USERS + "." + mUser.getUid(), true);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView = getView().findViewById(R.id.rv_main);
+        RecyclerView mRecyclerView = getView().findViewById(R.id.rv_main);
 
         FirestoreRecyclerOptions<EventDetails> options = new FirestoreRecyclerOptions.Builder<EventDetails>()
                 .setLifecycleOwner(this)
@@ -228,7 +226,7 @@ public class MainFragment extends Fragment {
                             }
                             //Toast.makeText(MainActivity.this, "UserID= " +userID + "ListID= " + listID, Toast.LENGTH_LONG).show();
 
-                            new AlertDialog.Builder(mContext)
+                            new AlertDialog.Builder(getContext())
                                     .setTitle("Are you sure you want to add a new event?")
                                     .setMessage(userName + " invite you to join " + eventName)
                                     .setIcon(android.R.drawable.ic_dialog_alert)
@@ -237,7 +235,7 @@ public class MainFragment extends Fragment {
                                         public void onClick(DialogInterface dialog, int whichButton) {
                                             Toast.makeText(getContext(), "Yaay", Toast.LENGTH_SHORT).show();
                                             //                            mDatabaseReference.child(EVENTS).child(eventId).child(USERS).child(MainActivity.mUser.getUid()).setValue(new UserInList(MainActivity.mUser, 0));
-                                            mFirestoreDatabase.collection(EVENTS).document(eventId).collection(USERS).document(mUser.getUid())
+                                            mFirestoreDatabase.collection(EVENTS).document(eventId).collection(USERS).document(userHandler.getUser().getUid())
                                                     .set(new UserInList("user", 0), SetOptions.merge());
                                             updateLong(FirebaseFirestore.getInstance().document(EVENTS + "/" + eventId), "numOfUsers", 1);
                                         }
@@ -249,8 +247,8 @@ public class MainFragment extends Fragment {
     }
 
     private void onSignedOutCleanup() {
-        if (mUser != null) {
-            mUser.setUsername(ANONYMOUS);
+        if (userHandler.getUser() != null) {
+            userHandler.getUser().setUsername(ANONYMOUS);
         }
 //        if (mOwnListAdapter != null)
 //            mOwnListAdapter.cleanup();
@@ -298,39 +296,39 @@ public class MainFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
+//
+//    // TODO: Rename method, update argument and hook method into UI event
+//    public void onButtonPressed(Uri uri) {
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction(uri);
+//        }
+//    }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//    }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//
+//
+//        mListener = null;
+//    }
+//
+//    /**
+//     * This interface must be implemented by activities that contain this
+//     * fragment to allow an interaction in this fragment to be communicated
+//     * to the activity and potentially other fragments contained in that
+//     * activity.
+//     * <p>
+//     * See the Android Training lesson <a href=
+//     * "http://developer.android.com/training/basics/fragments/communicating.html"
+//     * >Communicating with Other Fragments</a> for more information.
+//     */
+//    public interface OnFragmentInteractionListener {
+//        // TODO: Update argument type and name
+//        void onFragmentInteraction(Uri uri);
+//    }
 }

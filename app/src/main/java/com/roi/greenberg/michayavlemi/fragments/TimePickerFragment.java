@@ -39,30 +39,30 @@ public class TimePickerFragment extends DialogFragment
 
         final Calendar c;
         int hour = 0;
-        int minuts = 0;
+        int minutes = 0;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             c = Calendar.getInstance();
 
             hour = c.get(Calendar.HOUR);
-            minuts = c.get(Calendar.MINUTE);
+            minutes = c.get(Calendar.MINUTE);
         }
 
         // Create a new instance of DatePickerDialog and return it
-        return new TimePickerDialog(getActivity(), this, hour, minuts, true);
+        return new TimePickerDialog(getActivity(), this, hour, minutes, true);
     }
 
-    public void onTimeSet(TimePicker view, int hour, int minuts) {
+    public void onTimeSet(TimePicker view, int hour, int minutes) {
 
 //        DateText.setText(User.valueOf(day) + "/"
 //                + User.valueOf(month + 1) + "/" + User.valueOf(year));
         // set selected date into datepicker also
-        Log.d("TIMEPICKER", hour + ":" + minuts);
+        Log.d("TIMEPICKER", hour + ":" + minutes);
 
-        listener.onFinishTimeDialog(hour, minuts);
+        listener.onFinishTimeDialog(hour, minutes);
 
     }
 
     public interface TimePickerDialogListener {
-        void onFinishTimeDialog(int hour, int minuts);
+        void onFinishTimeDialog(int hour, int minutes);
     }
 }

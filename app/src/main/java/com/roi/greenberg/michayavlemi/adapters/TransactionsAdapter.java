@@ -37,11 +37,11 @@ public class TransactionsAdapter extends FirestoreRecyclerAdapter<Transaction, T
  * ViewHolder
  */
 public class TransactionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    TextView from;
-    TextView to;
-    TextView amount;
+    final TextView from;
+    final TextView to;
+    final TextView amount;
 
-    public TransactionHolder(View itemView) {
+    TransactionHolder(View itemView) {
         super(itemView);
         from = itemView.findViewById(R.id.tv_from_name);
         to = itemView.findViewById(R.id.tv_to_name);

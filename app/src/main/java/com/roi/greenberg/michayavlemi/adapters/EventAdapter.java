@@ -45,11 +45,10 @@ public class EventAdapter extends AdvanceFirestoreRecyclerAdapter<EventDetails, 
 
     public class EventHolder extends AdvanceFirestoreRecyclerAdapter.SelectableHolder{
 
-        TextView mTextViewEventName;
-        TextView mTextViewEventDay;
-        TextView mTextViewEventDate;
-        TextView mTextViewEventLocation;
-        String key;
+        final TextView mTextViewEventName;
+        final TextView mTextViewEventDay;
+        final TextView mTextViewEventDate;
+        final TextView mTextViewEventLocation;
 
         EventHolder(View itemView) {
             super(itemView);
@@ -64,8 +63,8 @@ public class EventAdapter extends AdvanceFirestoreRecyclerAdapter<EventDetails, 
 
         void bindItem(EventDetails eventDetails, boolean isSelected){
             mTextViewEventName.setText(eventDetails.getName());
-            mTextViewEventDay.setText(DateFormat.format("E", new Date(eventDetails.getTimeLong())));
-            mTextViewEventDate.setText(DateFormat.format("MM/dd", new Date(eventDetails.getTimeLong())));
+            mTextViewEventDay.setText(DateFormat.format("EEE", new Date(eventDetails.getTimeLong())));
+            mTextViewEventDate.setText(DateFormat.format("dd/MM", new Date(eventDetails.getTimeLong())));
             mTextViewEventLocation.setText(eventDetails.getLocation());
         }
 

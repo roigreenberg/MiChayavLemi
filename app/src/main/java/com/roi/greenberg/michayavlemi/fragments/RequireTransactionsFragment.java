@@ -1,4 +1,4 @@
-package com.roi.greenberg.michayavlemi;
+package com.roi.greenberg.michayavlemi.fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.adapters.TransactionsAdapter;
 import com.roi.greenberg.michayavlemi.models.Transaction;
 import com.roi.greenberg.michayavlemi.utils.EventHandler;
@@ -26,15 +27,13 @@ import static com.roi.greenberg.michayavlemi.utils.Utils.initRecycleView;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link RequireTransactionsFragment.OnFragmentInteractionListener} interface
+ * {link RequireTransactionsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link RequireTransactionsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class RequireTransactionsFragment extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
-    private FirebaseFirestore mFirestoreDatabase;
     private TransactionsAdapter mTransactionsAdapter;
 
     public RequireTransactionsFragment() {
@@ -45,19 +44,17 @@ public class RequireTransactionsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment RequireTransactionsFragment.
      */
-    public static RequireTransactionsFragment newInstance(String param1, String param2) {
+    private static RequireTransactionsFragment newInstance() {
 
         return new RequireTransactionsFragment();
     }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+//
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +63,8 @@ public class RequireTransactionsFragment extends Fragment {
          View view = inflater.inflate(R.layout.fragment_require_transactions, container, false);
 
         EventHandler eventHandler = EventHandler.getInstance();
-        mFirestoreDatabase = FirebaseFirestore.getInstance();
+        //    private OnFragmentInteractionListener mListener;
+        FirebaseFirestore mFirestoreDatabase = FirebaseFirestore.getInstance();
         Query transactionQuery = mFirestoreDatabase.collection(EVENTS).document(eventHandler.getEventId()).collection(TRANSACTIONS);
 //        Query transactionQuery = mFirebaseDatabase.child("events").child(mEventId).child("require_transactions");
         FirestoreRecyclerOptions<Transaction> transactionOptions = new FirestoreRecyclerOptions.Builder<Transaction>()
@@ -90,42 +88,42 @@ public class RequireTransactionsFragment extends Fragment {
         mTransactionsAdapter.stopListening();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
+//    // TODO: Rename method, update argument and hook method into UI event
+//    public void onButtonPressed(Uri uri) {
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction(uri);
 //        }
-    }
+//    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+////        if (context instanceof OnFragmentInteractionListener) {
+////            mListener = (OnFragmentInteractionListener) context;
+////        } else {
+////            throw new RuntimeException(context.toString()
+////                    + " must implement OnFragmentInteractionListener");
+////        }
+//    }
+//
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        mListener = null;
+//    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
+//    /**
+//     * This interface must be implemented by activities that contain this
+//     * fragment to allow an interaction in this fragment to be communicated
+//     * to the activity and potentially other fragments contained in that
+//     * activity.
+//     * <p>
+//     * See the Android Training lesson <a href=
+//     * "http://developer.android.com/training/basics/fragments/communicating.html"
+//     * >Communicating with Other Fragments</a> for more information.
+//     */
+//    public interface OnFragmentInteractionListener {
+//        // TODO: Update argument type and name
+//        void onFragmentInteraction(Uri uri);
+//    }
 }

@@ -11,7 +11,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.roi.greenberg.michayavlemi.MainFragment"
+        android:name="com.roi.greenberg.michayavlemi.fragments.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/eventFragment"
-        android:name="com.roi.greenberg.michayavlemi.EventFragment"
+        android:name="com.roi.greenberg.michayavlemi.fragments.EventFragment"
         android:label="fragment_event"
         tools:layout="@layout/fragment_event" >
         <argument
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/requireTransactionsFragment"
-        android:name="com.roi.greenberg.michayavlemi.RequireTransactionsFragment"
+        android:name="com.roi.greenberg.michayavlemi.fragments.RequireTransactionsFragment"
         android:label="fragment_require_transactions"
         tools:layout="@layout/fragment_require_transactions" />
 </navigation>

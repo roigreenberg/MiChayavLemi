@@ -1,4 +1,4 @@
-package com.roi.greenberg.michayavlemi;
+package com.roi.greenberg.michayavlemi.fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -38,10 +38,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.roi.greenberg.advancefirestorerecycleradapter.AdvanceFirestoreRecyclerAdapter;
+import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.activities.MainActivity;
 import com.roi.greenberg.michayavlemi.adapters.ExpensesAdapter;
 import com.roi.greenberg.michayavlemi.adapters.ItemAdapter;
-import com.roi.greenberg.michayavlemi.fragments.AddNewItemFragment;
 import com.roi.greenberg.michayavlemi.models.EventDetails;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.models.UserInList;
@@ -78,8 +78,6 @@ public class EventFragment extends Fragment {
     //    private DatabaseReference mFirebaseDatabase, mEventRef;
     private DocumentReference mEventRef;
     private FirebaseFirestore mFirestoreDatabase;
-    private ItemAdapter mItemAdapter;
-    private ExpensesAdapter mExpensesAdapter;
 
     public String[] childRef = {"totalexpenses", "average"};
     public HashMap<String, ValueEventListener> childListeners = new HashMap<>();
@@ -168,7 +166,7 @@ public class EventFragment extends Fragment {
                 .setQuery(itemsQuery, Item.class)
                 .setLifecycleOwner(this)
                 .build();
-        mItemAdapter = new ItemAdapter(ItemOptions, (MainActivity)getActivity());
+        ItemAdapter mItemAdapter = new ItemAdapter(ItemOptions, (MainActivity) getActivity());
         initRecycleView(getContext(), (RecyclerView) getView().findViewById(R.id.rv_event), mItemAdapter);
 
         Query expensesQuery = mEventRef.collection(USERS);
@@ -176,7 +174,7 @@ public class EventFragment extends Fragment {
                 .setQuery(expensesQuery, UserInList.class)
                 .setLifecycleOwner(this)
                 .build();
-        mExpensesAdapter = new ExpensesAdapter(ExpensesOptions);
+        ExpensesAdapter mExpensesAdapter = new ExpensesAdapter(ExpensesOptions);
         initRecycleView(getContext(), (RecyclerView) getView().findViewById(R.id.rv_event_bottom_sheet), mExpensesAdapter);
 
 
@@ -259,10 +257,10 @@ public class EventFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
+//    @Override
+////    public void onAttach(Context context) {
+////        super.onAttach(context);
+////    }
 
     @Override
     public void onDetach() {
@@ -288,7 +286,7 @@ public class EventFragment extends Fragment {
     private class EventActionModeCallback extends AdvanceFirestoreRecyclerAdapter.SelectableActionModeCallback
     {
         private static final String TAG = "EventActionModeCallback";
-        private AdvanceFirestoreRecyclerAdapter adapter;
+        private final AdvanceFirestoreRecyclerAdapter adapter;
         EventActionModeCallback(Context context, AdvanceFirestoreRecyclerAdapter adapter, int menu_layout) {
             super(context, adapter, menu_layout);
             this.adapter = adapter;

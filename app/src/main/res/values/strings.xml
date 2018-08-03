@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">MiChayavLemi</string>
     <string name="title_activity_list_events">ListEvents</string>
     <string name="title_activity_main2">Main2Activity</string>

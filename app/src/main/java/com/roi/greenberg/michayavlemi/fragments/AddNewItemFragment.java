@@ -21,11 +21,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
-import com.roi.greenberg.michayavlemi.MainFragment;
 import com.roi.greenberg.michayavlemi.models.Item;
 import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.models.User;
 import com.roi.greenberg.michayavlemi.utils.EventHandler;
+import com.roi.greenberg.michayavlemi.utils.UserHandler;
 import com.roi.greenberg.michayavlemi.utils.Utils;
 
 import java.util.ArrayList;
@@ -43,9 +43,9 @@ public class AddNewItemFragment extends DialogFragment {
     private EditText mPrice;
     private CheckBox mIsBought;
     private Switch mType;
-    private ArrayList<User> allUsers;
 
     private EventHandler eventHandler;
+    private UserHandler userHandler;
 
     private static final String TAG = "AddNewItemFragment";
 
@@ -64,11 +64,12 @@ public class AddNewItemFragment extends DialogFragment {
         mType = mView.findViewById(R.id.sw_new_item_type);
 
         eventHandler = EventHandler.getInstance();
+        userHandler = UserHandler.getInstance();
 
 
         Query userNameQuery = FirebaseFirestore.getInstance()
                 .collection(USERS).whereEqualTo(EVENTS + "." + eventHandler.getEventId(), true);
-        allUsers = Utils.getUserNames(userNameQuery);
+        ArrayList<User> allUsers = Utils.getUserNames(userNameQuery);
 
 
         Log.d("ADDITEM", allUsers.toString());
@@ -97,7 +98,7 @@ public class AddNewItemFragment extends DialogFragment {
                             .document(eventHandler.getEventId())
                             .collection(ITEMS)
                             .document()
-                            .set(new Item(name, MainFragment.mUser.getUid(), user.getUid(), price, mType.isChecked(), mIsBought.isChecked()), SetOptions.merge());
+                            .set(new Item(name, userHandler.getUser().getUid(), user.getUid(), price, mType.isChecked(), mIsBought.isChecked()), SetOptions.merge());
                     if (price > 0) {
                         FirebaseFirestore.getInstance().document(EVENTS + '/' + eventHandler.getEventId()).update(TOTAL_EXTENSES, eventHandler.getTotal() + price).addOnFailureListener(new OnFailureListener() {
                             @Override

@@ -63,17 +63,15 @@ public class DatePickerFragment extends DialogFragment
         int dayOfWeek;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             GregorianCalendar date = new GregorianCalendar(year, month, day-1);
-            dayOfWeek=date.get(GregorianCalendar.DAY_OF_WEEK);
         } else {
             java.util.GregorianCalendar date = new java.util.GregorianCalendar(year, month, day-1);
-            dayOfWeek=date.get(java.util.GregorianCalendar.DAY_OF_WEEK);
         }
 
-        listener.onFinishDateDialog(year, month, day, dayOfWeek);
+        listener.onFinishDateDialog(year, month, day);
 
     }
 
     public interface DatePickerDialogListener {
-        void onFinishDateDialog(int year, int month, int day, int dayOfWeek);
+        void onFinishDateDialog(int year, int month, int day);
     }
 }

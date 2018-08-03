@@ -71,11 +71,11 @@ public class ItemAdapter extends AdvanceFirestoreRecyclerAdapter<Item, ItemAdapt
      * ViewHolder
      */
     public class ItemHolder extends AdvanceFirestoreRecyclerAdapter.SelectableHolder{
-        TextView productName;
-        TextView productUser;
-        TextView productPrice;
+        final TextView productName;
+        final TextView productUser;
+        final TextView productPrice;
 
-        public ItemHolder(View itemView) {
+        ItemHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
