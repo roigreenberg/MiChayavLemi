@@ -1,0 +1,295 @@
+const functions = require('firebase-functions');
+
+// The Firebase Admin SDK to access the Firebase Realtime Database.
+const admin = require('firebase-admin');
+admin.initializeApp();
+
+
+// // Create and Deploy Your First Cloud Functions
+// // https://firebase.google.com/docs/functions/write-firebase-functions
+//
+// exports.helloWorld = functions.https.onRequest((request, response) => {
+//  response.send("Hello from Firebase!");
+// });
+
+function cmp(A, B) {
+	return B[0] - A[0];
+}
+
+function findSumAndAverage(items) {
+    console.log("in findAverage");
+    sum = 0;
+    count = items.numChildren();
+    items.forEach(item => {
+        expenses = item.val().expenses;
+        if (expenses) {
+            sum += expenses;
+        }
+
+    });
+    console.log("sum " + sum);
+    console.log("count " + count);
+    if (count > 0) {
+        return [sum, sum / count];
+    }
+    else {
+        return false;
+    }
+}
+
+function findDiffs(items, avg){
+
+    diffs = [];
+    items.forEach(item => {
+        expenses = item.val().expenses;
+        user = item.val().details;
+        console.log(user, expenses);
+        if (expenses !== null && user && (avg - expenses !== 0)) {
+            diffs.push([avg - expenses, user])
+        }
+    });
+    return diffs.sort(cmp);
+}
+
+function payExact(diffs, user){
+    console.log("look for exact match to " + user)
+    for (let u of diffs) {
+        console.log(u + "|" + user)
+        if (u && (u[1] !== user[1]) && (u[0] + user[0]) === 0){
+            console.log("found " + u);
+            index = diffs.indexOf(u);
+            diffs.splice(index, 1);
+            index = diffs.indexOf(user);
+            diffs.splice(index, 1);
+
+            if (user[0] > 0){
+                action = {"from": user[1], "to": u[1], "amount": user[0]};
+            }
+            else {
+                action = {"from": u[1], "to": user[1], "amount": user[0]};
+            }
+
+            return action;
+        }
+    }
+    return false;
+}
+
+function pay(diffs) {
+    pay_from = diffs[0];
+    pay_to = diffs[diffs.length - 1];
+    if (pay_from[0] > Math.abs(pay_to[0])){
+        action = {"from": pay_from[1].username, "to": pay_to[1].username, "amount": Math.abs(pay_to[0])};
+        diffs[0][0] -= Math.abs(pay_to[0]);
+        diffs.splice(diffs.length - 1, 1);
+        pay_all = false;
+    } else {
+        action = {"from": pay_from[1].username, "to": pay_to[1].username, "amount": pay_from[0]};
+        diffs[diffs.length - 1][0] -= pay_from[0];
+        diffs.splice(0, 1);
+        pay_all = true;
+    }
+    console.log(action)
+    console.log(diffs)
+    return [action, pay_all];
+
+}
+
+exports.calcPay = functions.database.ref('/events/{eventID}/users').onUpdate((users, context) => {
+		const data = users.after
+    const val = data.val();
+    console.log(val);
+    const event_id = context.params.eventID;
+    const ref = data.ref;
+    //db = functions.database();
+    require_transactions = ref.parent.child('require_transactions');
+
+    const promises = [];
+
+    res = findSumAndAverage(data);
+    if (res) {
+        sum = res[0];
+        ref.parent.child('totalexpenses').set(sum);
+        avg = res[1];
+        ref.parent.child('average').set(avg);
+    }
+    else{
+        console.log("Didn't find average");
+        return;
+    }
+
+    console.log(sum, avg);
+    diffs = findDiffs(data, avg);
+    console.log("diffs: " + diffs);
+
+    for (let u of diffs) {
+        if (!u || u[0] < 0) {
+            break;
+        }
+        action = payExact(diffs, u);
+        if (action) {
+            promises.push(action)
+        }
+    }
+    console.log("after " + diffs);
+    while (diffs.length > 1) {
+        diffs.sort(cmp)
+        res = pay(diffs);
+        console.log(res)
+        promises.push(res[0]);
+
+        if (diffs.length <= 1){
+            break;
+        }
+
+        if (res[1]) {
+            action = payExact(diffs, diffs[diffs.length - 1]);
+        } else {
+            action = payExact(diffs, diffs[0]);
+        }
+        if (action) {
+            promises.push(action)
+        }
+    }
+    console.log(promises);
+    
+    return require_transactions.set(promises)
+  //return Promise.all(promises);
+});
+
+exports.calcExpenses = functions.database.ref('/events/{eventID}/items/').onWrite((items, context) => {
+	const ref = items.after.ref;
+	expenses = {}
+	items.after.forEach(item => {
+		val = item.val()
+		price = val.price;
+		user = val.user
+		if (user !== undefined) {
+			uid = user.uid
+			if (!(uid in expenses)) {
+				expenses[uid] = price;
+			} else {
+				expenses[uid] += price;
+			}
+		}
+
+	});
+	
+	usersRef = ref.parent.child('users')
+	
+	return usersRef.once('value').then((snapshot) => {
+		return snapshot.forEach((childSnapshot) => {
+			var childKey = childSnapshot.key;
+			var expensesRef = childSnapshot.ref.child('expenses')
+			if (childKey in expenses) {
+				expensesRef.set(expenses[childKey])
+			} else {
+				expensesRef.set(0)
+			}
+		});
+	}).catch((error) => console.error('Failed to iterating: ' + error));
+
+  //return Promise.all(promises);
+});
+
+/*
+exports.calcUserTotal = functions.database.ref('/events/{eventID}/items/{itemID}').onWrite((data, context) => {
+    const val = data.after.val();
+    console.log(val);
+    const ref = data.after.ref;
+		user = val.user
+		if (user === undefined) {
+			return -1
+		}
+    user_id = user.uid;
+    console.log(user_id);
+		
+    userexpensesRef = ref.parent.parent.child('users').child(user_id).child('expenses');
+
+    if (data.before.exists() && data.before.val().price) {
+        prev_value = data.before.val().price;
+    } else {
+        prev_value = 0;
+    }
+    if (data.exists() && val.price) {
+        new_value  = val.price;
+    }
+    else {
+        new_value = 0;
+    }
+
+		console.log(new_value + " " + prev_value);
+		
+    return userexpensesRef.transaction((current) => {
+				console.log(current)
+        return (current || 0) + new_value - prev_value;
+    });
+
+  //return Promise.all(promises);
+});
+*/
+
+exports.deleteEventFromUser = functions.database.ref('/events/{eventID}/users/{userID}').onDelete((user, context) => {
+    const val = user.val();
+	console.log(val);
+	const ref = user.ref;
+    const event_id = context.params.eventID;
+    const user_id = context.params.userID;
+	detailsRef = ref.parent.parent.child('details');
+	
+	return detailsRef.once('value').then((snapshot) => {
+        
+        userRef = admin.database().ref('/users/' + user_id + '/events/' + event_id)
+        console.log(userRef, snapshot.val())
+        return userRef.set(null)
+	}).catch((error) => console.error('There was an error while adding event ' + event_id + ': ' + error));
+});
+
+exports.addEventToUser = functions.database.ref('/events/{eventID}/users/{userID}').onCreate((user, context) => {
+    const val = user.val();
+	console.log(val);
+	const ref = user.ref;
+    const event_id = context.params.eventID;
+    const user_id = context.params.userID;
+	detailsRef = ref.parent.parent.child('details');
+	
+	return detailsRef.once('value').then((snapshot) => {
+        
+        userRef = admin.database().ref('/users/' + user_id + '/events/' + event_id)
+        console.log(userRef, snapshot.val())
+        return userRef.set(snapshot.val())
+	}).catch((error) => console.error('There was an error while adding event ' + event_id + ': ' + error));
+});
+
+exports.updateUserEvents = functions.database.ref('/events/{eventID}/details/').onWrite((data, context) => {
+	const val = data.after.val();
+	console.log(val);
+	const ref = data.after.ref;
+	const event_id = context.params.eventID;
+	usersRef = ref.parent.child('users/');
+	
+	return usersRef.once('value').then((snapshot) => {
+		return snapshot.forEach((childSnapshot) => {
+			var childKey = childSnapshot.key;
+            userRef = admin.database().ref('/users/' + childKey + '/events/' + event_id)
+            console.log(userRef)
+			userRef.set(val)
+		});
+	}).catch((error) => console.error('There was an error while adding event ' + event_id + ': ' + error));
+});
+
+exports.updateEventUser = functions.database.ref('/users/{userID}/details/').onWrite((data, context) => {
+	const val = data.after.val();
+	console.log(val);
+	const ref = data.after.ref;
+	const user_id = context.params.userID;
+	eventsRef = ref.parent.child('events');
+	
+	return eventsRef.once('value').then((snapshot) => {
+		return snapshot.forEach((childSnapshot) => {
+			var childKey = childSnapshot.key;
+			eventRef = admin.database().ref('/events/' + childKey + '/users/' + user_id)
+			eventRef.set(val)
+		});
+	}).catch((error) => console.error('There was an error while edit user ' + user_id + ': ' + error));
+});
