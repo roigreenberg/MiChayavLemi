@@ -247,7 +247,7 @@ public class MainFragment extends Fragment {
     }
 
     private void onSignedOutCleanup() {
-        if (userHandler.getUser() != null) {
+        if (userHandler != null) {
             userHandler.getUser().setUsername(ANONYMOUS);
         }
 //        if (mOwnListAdapter != null)
