@@ -2,6 +2,8 @@ package com.roi.greenberg.michayavlemi.activities;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.navigation.Navigation;
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +15,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.roi.greenberg.michayavlemi.R;
+import com.roi.greenberg.michayavlemi.fragments.AboutFragment;
 
 
 public class MainActivity extends AppCompatActivity implements LifecycleOwner {
@@ -72,6 +75,11 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
             case R.id.action_settings:
 //            startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            case R.id.about_menu:
+                FragmentManager fragmentManager = this.getSupportFragmentManager();
+                DialogFragment DateFragment = new AboutFragment();
+                DateFragment.show(fragmentManager, "aboutFragment");
                 return true;
             case R.id.sign_out_menu:
                 AuthUI.getInstance().signOut(this);
