@@ -21,30 +21,30 @@ android {
     }
 }
 
-def nav_version = "1.0.0-alpha05"
+def nav_version = "1.0.0-alpha06"
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
 
-    implementation 'androidx.appcompat:appcompat:1.0.0-rc02'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
 //    implementation 'com.google.android.material:material:1.0.0-alpha3'
-    implementation 'androidx.cardview:cardview:1.0.0-rc02'
-    implementation 'androidx.browser:browser:1.0.0-rc02'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0-rc02'
-    implementation 'androidx.mediarouter:mediarouter:1.0.0-beta01'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.browser:browser:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.mediarouter:mediarouter:1.0.0'
 
     implementation 'com.facebook.android:facebook-android-sdk:4.33.0'
 
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0-rc02'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 
-    implementation 'com.google.android.gms:play-services-base:15.0.1'
+    implementation 'com.google.android.gms:play-services-base:16.0.1'
 
-    implementation 'com.google.android.gms:play-services-auth:16.0.0'
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
 
     //    implementation 'com.android.support:animated-vector-drawable:26.1.0'
 //    implementation project(':selectablefirebaserecycleradapter')
@@ -52,11 +52,11 @@ dependencies {
     implementation 'com.github.roigreenberg:AdvanceFirestoreAdapter:androidx-SNAPSHOT'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
 
-    implementation 'com.google.firebase:firebase-invites:16.0.3'
-    implementation 'com.google.firebase:firebase-core:16.0.3'
-    implementation 'com.google.firebase:firebase-database:16.0.2'
-    implementation 'com.google.firebase:firebase-auth:16.0.3'
-    implementation 'com.google.firebase:firebase-firestore:17.1.0'
+    implementation 'com.google.firebase:firebase-invites:16.0.4'
+    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-database:16.0.4'
+    implementation 'com.google.firebase:firebase-auth:16.0.5'
+    implementation 'com.google.firebase:firebase-firestore:17.1.2'
 
     implementation 'com.firebaseui:firebase-ui-auth:4.0.1'
     implementation 'com.firebaseui:firebase-ui-database:4.1.0'
