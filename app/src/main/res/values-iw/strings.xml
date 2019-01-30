@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">מי חייב למי</string>
+    <string name="action_settings">הגדרות</string>
+    <string name="sign_out">התנתק</string>
+    <string name="label_ok">אישור</string>
+    <string name="new_event_title">צור את האירוע שלך</string>
+    <string name="new_item_title">הוסף פריט חדש</string>
+    <string name="hint_item_name">שם הפריט</string>
+    <string name="hint_user_name">שם המשתמש</string>
+    <string name="hint_price">עלות</string>
+    <string name="total">סה\"כ</string>
+    <string name="average">ממוצע</string>
+    <string name="from">מ:</string>
+    <string name="to">אל:</string>
+    <string name="amount">סכום</string>
+    <string name="require_transactions">העברות נדרשות</string>
+    <string name="share">שתף</string>
+    <string name="assign_to">"מוקצה ל: "</string>
+    <string name="delete">מחק</string>
+    <string name="edit_item">ערוך</string>
+    <string name="new_item_type_permanent">קבוע</string>
+    <string name="new_item_isbought">שולם?</string>
+    <string name="date">תאריך</string>
+    <string name="time">שעה</string>
+    <string name="location_event">מיקום האירוע</string>
+    <string name="event">אירוע</string>
+    <string name="day">יום</string>
+    <string name="location">מיקום</string>
+    <string name="name">שם</string>
+    <string name="expenses">הוצאות</string>
+    <string name="user">משתמש</string>
+    <string name="type_event_name">שם האירוע</string>
+    <string name="about">אודות</string>
+</resources>

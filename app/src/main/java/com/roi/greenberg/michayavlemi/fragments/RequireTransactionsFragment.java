@@ -4,19 +4,26 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.FirebaseFunctionsException;
 import com.roi.greenberg.michayavlemi.R;
 import com.roi.greenberg.michayavlemi.adapters.TransactionsAdapter;
 import com.roi.greenberg.michayavlemi.models.Transaction;
+import com.roi.greenberg.michayavlemi.utils.DatabaseHandler;
 import com.roi.greenberg.michayavlemi.utils.EventHandler;
 
 import static com.roi.greenberg.michayavlemi.utils.Constants.EVENTS;
@@ -34,7 +41,14 @@ import static com.roi.greenberg.michayavlemi.utils.Utils.initRecycleView;
  */
 public class RequireTransactionsFragment extends Fragment {
 
+    private static final String TAG = "RequireTransactionsFrag";
+
     private TransactionsAdapter mTransactionsAdapter;
+
+    private DatabaseHandler databaseHandler;
+    private EventHandler eventHandler;
+    //    private OnFragmentInteractionListener mListener;
+    private FirebaseFirestore mFirestoreDatabase;
 
     public RequireTransactionsFragment() {
         // Required empty public constructor
@@ -50,11 +64,38 @@ public class RequireTransactionsFragment extends Fragment {
 
         return new RequireTransactionsFragment();
     }
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        databaseHandler = DatabaseHandler.getInstance();
+        eventHandler = EventHandler.getInstance();
+        //    private OnFragmentInteractionListener mListener;
+        mFirestoreDatabase = FirebaseFirestore.getInstance();
+
+        databaseHandler.calculateTransactions(eventHandler.getEventId())
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Exception e = task.getException();
+                            if (e instanceof FirebaseFunctionsException) {
+                                FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                                FirebaseFunctionsException.Code code = ffe.getCode();
+                                Object details = ffe.getDetails();
+                                Log.e(TAG, code.toString() + ", " + details.toString());
+                            }
+
+                            // ...
+                        }
+
+                        // ...
+                    }
+                });
+
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,9 +103,7 @@ public class RequireTransactionsFragment extends Fragment {
         // Inflate the layout for this fragment
          View view = inflater.inflate(R.layout.fragment_require_transactions, container, false);
 
-        EventHandler eventHandler = EventHandler.getInstance();
-        //    private OnFragmentInteractionListener mListener;
-        FirebaseFirestore mFirestoreDatabase = FirebaseFirestore.getInstance();
+
         Query transactionQuery = mFirestoreDatabase.collection(EVENTS).document(eventHandler.getEventId()).collection(TRANSACTIONS);
 //        Query transactionQuery = mFirebaseDatabase.child("events").child(mEventId).child("require_transactions");
         FirestoreRecyclerOptions<Transaction> transactionOptions = new FirestoreRecyclerOptions.Builder<Transaction>()

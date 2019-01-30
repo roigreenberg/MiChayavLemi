@@ -180,9 +180,9 @@ function setTransactions(diffs, event_id) {
             transactions.push(require_transactions.doc().set(action))
         }
     }
-    console.log(transactions);
+    console.log("transactions: " + transactions);
     // require_transactions.update(transactions)
-    return
+    return Promise.all(transactions)
 }
 
 exports.calculatePay = functions.firestore.document('/events/{eventID}/users/{user}').onUpdate((user, context) => {
@@ -193,8 +193,6 @@ exports.calculatePay = functions.firestore.document('/events/{eventID}/users/{us
     const transactions = [];
     const usersRef = db.collection('events/' + event_id + '/users/')
     return usersRef.get().then(snapshot => {
-
-        
 
         res = findSumAndAverage(snapshot);
 
@@ -209,21 +207,45 @@ exports.calculatePay = functions.firestore.document('/events/{eventID}/users/{us
         }
 
         console.log(sum, avg);
-        diffs = [];
-        promises.push(findDiffs(snapshot, avg, event_id, diffs));
         return;
-        
 
-         
     }).then(() => {
         return Promise.all(promises);
     }).catch(err => {
         console.log('Error getting documents', err);
     });
-    
+    // return require_transactions.set(promises)
+  //return Promise.all(promises);
+});
 
-    
-    
+exports.calculateTransactions = functions.https.onCall((data, context) => {
+    const event_id = data.eventId;
+    console.log("Event ID: " + event_id);
+    const promises = [];
+
+    const usersRef = db.collection('events/' + event_id + '/users/')
+    return usersRef.get().then(snapshot => {
+
+        avg = findSumAndAverage(snapshot)[1];
+
+        if (avg) {
+            console.log("avg:", avg);
+        } else {
+            console.log("Didn't find average");
+            return;
+        }
+
+        diffs = [];
+        promises.push(findDiffs(snapshot, avg, event_id, diffs));
+        return;
+
+
+
+    }).then(() => {
+        return Promise.all(promises);
+    }).catch(err => {
+        console.log('Error getting documents', err);
+    });
     // return require_transactions.set(promises)
   //return Promise.all(promises);
 });
