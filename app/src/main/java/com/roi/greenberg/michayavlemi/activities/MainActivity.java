@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements LifecycleOwner {
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setTimestampsInSnapshotsEnabled(true)
                 .setPersistenceEnabled(true)
                 .build();
         firestore.setFirestoreSettings(settings);

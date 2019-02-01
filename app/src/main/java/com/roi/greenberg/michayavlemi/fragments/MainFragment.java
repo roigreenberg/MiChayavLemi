@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -66,7 +68,7 @@ public class MainFragment extends Fragment {
 
 //    private OnFragmentInteractionListener mListener;
 
-    private static final int RC_SIGN_IN = 1;
+    private static final int RC_SIGN_IN = 123;
     private static final String TAG = "MainFragment";
     private static final String ANONYMOUS = "anonymous";
 
@@ -118,7 +120,7 @@ public class MainFragment extends Fragment {
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
-                                    .setIsSmartLockEnabled(false)
+                                    .setIsSmartLockEnabled(true)
                                     .setAvailableProviders(Arrays.asList(
                                             new AuthUI.IdpConfig.EmailBuilder().build(),
                                             new AuthUI.IdpConfig.GoogleBuilder().build(),
@@ -129,10 +131,6 @@ public class MainFragment extends Fragment {
                 }
             }
         };
-
-
-
-
     }
 
     @Override
@@ -145,7 +143,14 @@ public class MainFragment extends Fragment {
                 Toast.makeText(getContext(), "Signed in!", Toast.LENGTH_SHORT).show();
             } else if (resultCode == RESULT_CANCELED) {
                 // Sign in was canceled by the user, finish the activity
-                Toast.makeText(getContext(), "Sign in canceled", Toast.LENGTH_SHORT).show();
+                String toastText = "Sign in canceled";
+                switch (IdpResponse.fromResultIntent(data).getError().getErrorCode()){
+                    case ErrorCodes.NO_NETWORK:
+                        toastText = "Sign in failed due to network error";
+                        break;
+                }
+                Log.e(TAG, toastText);
+                Toast.makeText(getContext(), toastText, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
         }
